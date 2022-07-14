@@ -12,11 +12,6 @@ struct ShaderSourceProgram
 
 class Shader
 {
-private:
-	std::string m_FilePath;
-	uint32_t m_RendererID;
-	std::unordered_map<std::string, int32_t> m_UniformLocationCache;
-
 public:
 	Shader(const std::string& filepath);
 	~Shader();
@@ -26,6 +21,11 @@ public:
 
 	//Set uniforms
 	void SetUniformMatrix4fv(const std::string& uniformName, const glm::mat4& matrix);
+
+private:
+	std::string m_FilePath;
+	uint32_t m_RendererID;
+	std::unordered_map<std::string, int32_t> m_UniformLocationCache;
 
 private:
 	ShaderSourceProgram ParseShader(const std::string& filepath);

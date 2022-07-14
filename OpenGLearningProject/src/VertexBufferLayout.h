@@ -27,10 +27,6 @@ struct VertexBufferAttribute
 
 class VertexBufferLayout
 {
-private:
-	std::vector<VertexBufferAttribute> m_Attributes;
-	uint32_t m_Stride;
-
 public:
 	VertexBufferLayout()
 		: m_Stride(0) {}
@@ -114,4 +110,8 @@ public:
 		layout.Push<float>(3);
 		return layout;
 	}
+
+private:
+	std::vector<VertexBufferAttribute> m_Attributes;
+	uint32_t m_Stride;
 };

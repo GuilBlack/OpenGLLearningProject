@@ -7,10 +7,6 @@ class VertexBufferLayout;
 
 class VertexArray
 {
-private:
-	uint32_t m_RendererID;
-	uint32_t m_IbCount;
-
 public:
 	VertexArray();
 	~VertexArray();
@@ -20,5 +16,9 @@ public:
 	void Bind() const;
 	void Unbind() const;
 	inline uint32_t GetIbCount() const { return m_IbCount; }
+
+private:
+	uint32_t m_RendererID;
+	uint32_t m_IbCount;
 };
 

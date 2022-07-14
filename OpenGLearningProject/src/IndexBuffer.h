@@ -3,10 +3,6 @@
 
 class IndexBuffer
 {
-private:
-	uint32_t m_RendererID;
-	uint32_t m_Count;
-
 public:
 	IndexBuffer();
 	IndexBuffer(const void* data, uint32_t count);
@@ -18,5 +14,9 @@ public:
 	void Unbind() const;
 
 	inline uint32_t GetCount() const { return m_Count; };
+
+private:
+	uint32_t m_RendererID;
+	uint32_t m_Count;
 };
 

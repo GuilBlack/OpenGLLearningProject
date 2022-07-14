@@ -21,6 +21,6 @@ class Renderer
 {
 public:
 	void Clean() const;
-	void Draw(const VertexArray& va, const Shader& shader) const;
+	void Render(const VertexArray& va, const Shader& shader) const;
 };
 
