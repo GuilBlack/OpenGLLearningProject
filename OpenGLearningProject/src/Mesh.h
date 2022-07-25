@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 
 #include "VertexBufferLayout.h"
 
@@ -12,6 +13,7 @@ public:
 	~Mesh();
 
 	void Draw(Shader& shader);
+	void Draw(std::shared_ptr<Shader> shader);
 
 	void MoveTo(glm::vec3 position);
 	void SetPosition(glm::vec3 position);
@@ -41,5 +43,6 @@ private:
 private:
 	void UpdateModelMatrix();
 	void UpdateUniforms(Shader& shader) const;
+	void UpdateUniforms(std::shared_ptr<Shader> shader) const;
 };
 

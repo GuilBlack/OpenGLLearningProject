@@ -29,6 +29,16 @@ void Mesh::Draw(Shader& shader)
 	GlCall(glDrawElements(GL_TRIANGLES, m_Va.GetIbCount(), GL_UNSIGNED_INT, 0));
 }
 
+void Mesh::Draw(std::shared_ptr<Shader> shader)
+{
+	UpdateModelMatrix();
+	UpdateUniforms(shader);
+
+	shader->Bind();
+	m_Va.Bind();
+	GlCall(glDrawElements(GL_TRIANGLES, m_Va.GetIbCount(), GL_UNSIGNED_INT, 0));
+}
+
 void Mesh::MoveTo(glm::vec3 position)
 {
 	m_Position += position;
@@ -87,4 +97,9 @@ void Mesh::UpdateModelMatrix()
 void Mesh::UpdateUniforms(Shader& shader) const
 {
 	shader.SetUniformMatrix4fv("model", m_ModelMatrix);
+}
+
+void Mesh::UpdateUniforms(std::shared_ptr<Shader> shader) const
+{
+	shader->SetUniformMatrix4fv("model", m_ModelMatrix);
 }
