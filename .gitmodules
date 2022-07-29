@@ -1,0 +1,3 @@
+[submodule "OpenGLearningProject/src/vendor/spdlog"]
+	path = OpenGLearningProject/src/vendor/spdlog
+	url = https://github.com/gabime/spdlog.git
