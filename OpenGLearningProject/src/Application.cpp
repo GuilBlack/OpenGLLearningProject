@@ -1,9 +1,11 @@
 #pragma once
-#include <iostream>
-#include <cmath>
-
+#include "pch.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include "vendor/glm/glm.hpp"
+#include "vendor/glm/gtc/matrix_transform.hpp"
+#include "vendor/glm/gtc/type_ptr.hpp"
 
 #include "Renderer.h"
 #include "Shader.h"
@@ -14,12 +16,9 @@
 #include "Mesh.h"
 #include "Engine3D.h"
 
-#include "vendor/glm/glm.hpp"
-#include "vendor/glm/gtc/matrix_transform.hpp"
-#include "vendor/glm/gtc/type_ptr.hpp"
-
 int main()
 {
+
 	std::vector<uint32_t> indices = {
 		0, 3, 1,
 		1, 3, 2,

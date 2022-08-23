@@ -1,9 +1,7 @@
+#include "pch.h"
 #include "Shader.h"
 
 #include <GL/glew.h>
-#include <iostream>
-#include <fstream>
-#include <sstream>
 
 #include "Renderer.h"
 

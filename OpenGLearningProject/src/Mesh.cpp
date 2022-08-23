@@ -1,6 +1,6 @@
+#include "pch.h"
 #include "Mesh.h"
 
-#include <iostream>
 #include "glm/gtc/matrix_transform.hpp"
 
 Mesh::Mesh(const void* vertices, uint32_t sizeOfVb, const void* indices, uint32_t nbOfIndices, VertexBufferLayout layout, 

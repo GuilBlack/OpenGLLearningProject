@@ -1,5 +1,5 @@
+#include "pch.h"
 #include "Renderer.h"
-#include <iostream>
 
 void GlClearError()
 {
