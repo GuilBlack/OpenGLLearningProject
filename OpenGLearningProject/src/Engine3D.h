@@ -1,14 +1,13 @@
 #pragma once
-#include <vector>
-#include <memory>
-#include <functional>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include "Renderer.h"
 #include "Mesh.h"
+#include "Events/Event.h"
 
+class WindowCloseEvent;
 
 class Engine3D
 {
@@ -24,17 +23,27 @@ public:
 
 	void Run();
 
-	void SetWindowShouldClose();
+	void OnEvent(Event& e);
+	bool SetWindowShouldClose(WindowCloseEvent& e);
 
 private:
+	bool m_Running = true;
 	const int32_t m_cOpenGlMajorVersion;
 	const int32_t m_cOpenGlMinorVersion;
-	int32_t m_Width;
-	int32_t m_Height;
-	int32_t m_BufferWidth;
-	int32_t m_BufferHeight;
-	bool m_Resizable;
 
+	struct WindowData
+	{
+		std::string Title;
+		int32_t Width, Height, TempWidth, TempHeight;
+
+		EventCallbackFn EventCallback;
+		
+		WindowData(std::string title, int32_t width, int32_t height, int32_t tempWidth, int32_t tempHeight)
+			: Title(title), Width(width), Height(height), TempWidth(tempWidth), TempHeight(tempHeight) {}
+	};
+	
+	bool m_Resizable;
+	WindowData m_WindowData;
 	GLFWwindow* m_Window;
 
 	Renderer m_Renderer;
@@ -42,8 +51,10 @@ private:
 	std::vector<std::shared_ptr<Mesh>> m_Meshes;
 
 private:
-	void InitGlfw();
+	void InitGLFW();
 	void InitWindow(const char* windowTitle, bool resizable);
+	void InitCallbacks();
+	inline void SetEventCallback(const EventCallbackFn& callback) { m_WindowData.EventCallback = callback; }
 	void InitGlew();
 	void InitOpenGLOptions();
 };
