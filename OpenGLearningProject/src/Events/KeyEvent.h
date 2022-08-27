@@ -24,7 +24,7 @@ public:
 	std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "KeyPressedEvent: " << m_KeyCode << ", repeated: " << m_RepeatCount << std::endl;
+		ss << "KeyPressedEvent: " << m_KeyCode << ", repeated: " << m_RepeatCount;
 		return ss.str();
 	}
 
@@ -43,9 +43,26 @@ public:
 	std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "KeyReleasedEvent: " << m_KeyCode << std::endl;
+		ss << "KeyReleasedEvent: " << m_KeyCode;
 		return ss.str();
 	}
 
 	EVENT_TYPE_CLASS_DEFINE(KeyReleased)
+};
+
+class KeyTypedEvent : public KeyEvent
+{
+public:
+	KeyTypedEvent(int keycode)
+		: KeyEvent(keycode)
+	{}
+
+	std::string ToString() const override
+	{
+		std::stringstream ss;
+		ss << "KeyTypedEvent: " << m_KeyCode;
+		return ss.str();
+	}
+
+	EVENT_TYPE_CLASS_DEFINE(KeyTyped)
 };

@@ -54,13 +54,13 @@ public:
 	MouseMovedEvent(double x, double y) 
 		: m_MouseX(x), m_MouseY(y) {}
 
-	inline float GetX() const { return m_MouseX; }
-	inline float GetY() const { return m_MouseY; }
+	inline double GetX() const { return m_MouseX; }
+	inline double GetY() const { return m_MouseY; }
 
 	std::string ToString() const override
 	{
 		std::stringstream ss;
-		ss << "MouseMovedEvent: x = " << m_MouseX << ", y = " << m_MouseY << std::endl;
+		ss << "MouseMovedEvent: x = " << m_MouseX << ", y = " << m_MouseY;
 		return ss.str();
 	}
 
@@ -77,8 +77,8 @@ public:
 	MouseScrolledEvent(double offsetX, double offsetY)
 		: m_OffsetX(offsetX), m_OffsetY(offsetY) {}
 
-	inline float GetOffsetX() const { return m_OffsetX; }
-	inline float GetOffsetY() const { return m_OffsetY; }
+	inline double GetOffsetX() const { return m_OffsetX; }
+	inline double GetOffsetY() const { return m_OffsetY; }
 
 	std::string ToString() const override
 	{

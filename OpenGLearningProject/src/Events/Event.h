@@ -7,7 +7,7 @@ enum class EventType
 {
 	None = 0,
 	WindowResize, WindowClose,
-	KeyPressed, KeyReleased,
+	KeyPressed, KeyReleased, KeyTyped,
 	MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 };
 
@@ -29,11 +29,13 @@ enum EventCategory
 
 class Event
 {
-	friend class EventDispatcher;
 	friend inline std::ostream& operator<<(std::ostream& os, const Event& e)
 	{
 		return os << e.ToString();
 	}
+public:
+	bool Handler = false;
+
 public:
 	virtual EventType GetEventType() const = 0;
 	virtual const char* GetName() const = 0;
@@ -44,26 +46,36 @@ public:
 	{
 		return GetCategory() & (int)category;
 	}
-
-protected:
-	bool m_Handler = false;
 };
 
+/// <summary>
+/// Used to dispatch events.
+/// </summary>
 class EventDispatcher
 {
 public:
 	template<typename T>
 	using EventFn = std::function<bool(T&)>;
 
-	EventDispatcher(Event& e)
-		: m_Event(e) {}
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="e">It's an instance of an inheritor of the Event class and not an instance of the class directly.</param>
+	EventDispatcher(Event& ev)
+		: m_Event(ev) {}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <typeparam name="T">An inheritor of the Event class</typeparam>
+	/// <param name="fn">A callback function that takes in an inheritor of the Event class and returns a bool to know if the event has been handled.</param>
+	/// <returns>Bool signifying if the dispatched event has been handled.</returns>
 	template<typename T>
 	bool Dispatch(EventFn<T> fn)
 	{
 		if (m_Event.GetEventType() == T::GetStaticEventType())
 		{
-			m_Event.m_Handler = fn(*(T*)&m_Event);
+			m_Event.Handler = fn(*(T*)&m_Event);
 			return true;
 		}
 		return false;
@@ -74,3 +86,4 @@ private:
 };
 
 using EventCallbackFn = std::function<void(Event&)>;
+#define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
