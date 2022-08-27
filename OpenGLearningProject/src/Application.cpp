@@ -1,20 +1,7 @@
 #pragma once
 #include "pch.h"
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
-#include "vendor/glm/glm.hpp"
-#include "vendor/glm/gtc/matrix_transform.hpp"
-#include "vendor/glm/gtc/type_ptr.hpp"
-
-#include "Renderer.h"
-#include "Shader.h"
-#include "VertexArray.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexBufferLayout.h"
-#include "Mesh.h"
 #include "Engine3D.h"
+#include "ImGui/ImGuiLayer.h"
 
 int main()
 {
@@ -41,6 +28,8 @@ int main()
 		glm::vec3(0.4f, 0.4f, 0.4f));
 
 	customEngine->PushShader("res/shaders/Basic.shader");
+
+	customEngine->PushOverlay(new ImGuiLayer());
 	
 	customEngine->Run();
 	delete customEngine;
