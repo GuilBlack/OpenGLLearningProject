@@ -7,7 +7,7 @@
 #include "Events/MouseEvent.h"
 #include "Events/KeyEvent.h"
 
-#define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
+Engine3D* Engine3D::s_Engine = nullptr;
 
 static void GLFWErrorCallback(int errorCode, const char* description)
 {
@@ -17,6 +17,8 @@ static void GLFWErrorCallback(int errorCode, const char* description)
 Engine3D::Engine3D(int32_t openGlMajorVersion, int32_t openGlMinorVersion, int32_t width, int32_t height, const char* windowTitle, bool resizable)
 	: m_cOpenGlMajorVersion(openGlMajorVersion), m_cOpenGlMinorVersion(openGlMinorVersion), m_Resizable(resizable), m_WindowData(windowTitle, width, height, width, height)
 {
+	s_Engine = this;
+
 	Log::Init();
 	InitGLFW();
 	InitWindow(windowTitle, resizable);
@@ -172,6 +174,14 @@ void Engine3D::InitCallbacks()
 				}
 			}
 		});
+
+	glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int codepoint)
+		{
+			WindowData& wData = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+			
+			KeyTypedEvent ev(codepoint);
+			wData.EventCallback(ev);
+		});
 }
 
 void Engine3D::InitGlew()
@@ -239,15 +249,24 @@ void Engine3D::Run()
 		m_Meshes[0]->Rotate(glm::vec3(0.0f, 0.2f, 0.0f));
 		m_Meshes[0]->Draw(m_Shaders[0]);
 
+		for (Layer* layer : m_LayerStack)
+			layer->OnUpdate();
+
 		glfwSwapBuffers(m_Window);
 	}
 }
 
-void Engine3D::OnEvent(Event& e)
+void Engine3D::OnEvent(Event& ev)
 {
-	ENGINE_TRACE("{0}", e);
-	EventDispatcher ed(e);
+	EventDispatcher ed(ev);
 	ed.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Engine3D::SetWindowShouldClose));
+
+	for (auto iterator = m_LayerStack.end(); iterator != m_LayerStack.begin();)
+	{
+		(*--iterator)->OnEvent(ev);
+		if (ev.Handler)
+			break;
+	}
 }
 
 bool Engine3D::SetWindowShouldClose(WindowCloseEvent& e)
