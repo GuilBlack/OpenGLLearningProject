@@ -13,12 +13,12 @@ class WindowCloseEvent;
 /// <summary>
 /// basically where the application will run.
 /// </summary>
-class Engine3D
+class Engine
 {
 public:
-	Engine3D(int32_t openGlMajorVersion = 3, int32_t openGlMinorVersion = 3, int32_t width = 800, int32_t height = 600, const char* windowTitle = "Engine3D", bool resizable = true);
-	~Engine3D();
-	inline static Engine3D& GetEngine() { return *s_Engine; }
+	Engine(int32_t openGlMajorVersion = 3, int32_t openGlMinorVersion = 3, int32_t width = 1280, int32_t height = 720, const char* windowTitle = "Engine", bool resizable = true);
+	~Engine();
+	inline static Engine& GetEngine() { return *s_Engine; }
 	inline GLFWwindow& GetWindow() { return *m_Window; }
 
 	void Run();
@@ -37,7 +37,7 @@ public:
 	bool SetWindowShouldClose(WindowCloseEvent& e);
 
 private:
-	static Engine3D* s_Engine;
+	static Engine* s_Engine;
 	bool m_Running = true;
 	const int32_t m_cOpenGlMajorVersion;
 	const int32_t m_cOpenGlMinorVersion;

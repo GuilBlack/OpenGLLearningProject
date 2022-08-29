@@ -5,7 +5,7 @@
 #include <imgui_impl_opengl3.h>
 #include "Inputs/InputCodes.h"
 
-#include <../Engine3D.h>
+#include <../Engine.h>
 
 ImGuiLayer::ImGuiLayer() : Layer("ImGui Layer") 
 {
@@ -132,7 +132,7 @@ void ImGuiLayer::OnAttach()
 	ImGui::StyleColorsDark();
 
 	// Setup Platform/Renderer backends
-	Engine3D& engine =  Engine3D::GetEngine();
+	Engine& engine =  Engine::GetEngine();
 	ImGui_ImplGlfw_InitForOpenGL(&engine.GetWindow(), false);
 	ImGui_ImplOpenGL3_Init("#version 420");
 }

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Engine3D.h"
+#include "Engine.h"
 
 #include "vendor/glm/gtc/matrix_transform.hpp"
 #include "Log.h"
@@ -7,14 +7,14 @@
 #include "Events/MouseEvent.h"
 #include "Events/KeyEvent.h"
 
-Engine3D* Engine3D::s_Engine = nullptr;
+Engine* Engine::s_Engine = nullptr;
 
 static void GLFWErrorCallback(int errorCode, const char* description)
 {
 	ENGINE_ERROR("GLFW Error {0}: {1}", errorCode, description);
 }
 
-Engine3D::Engine3D(int32_t openGlMajorVersion, int32_t openGlMinorVersion, int32_t width, int32_t height, const char* windowTitle, bool resizable)
+Engine::Engine(int32_t openGlMajorVersion, int32_t openGlMinorVersion, int32_t width, int32_t height, const char* windowTitle, bool resizable)
 	: m_cOpenGlMajorVersion(openGlMajorVersion), m_cOpenGlMinorVersion(openGlMinorVersion), m_Resizable(resizable), m_WindowData(windowTitle, width, height, width, height)
 {
 	s_Engine = this;
@@ -28,7 +28,7 @@ Engine3D::Engine3D(int32_t openGlMajorVersion, int32_t openGlMinorVersion, int32
 	ENGINE_INFO("Engine Created.");
 }
 
-Engine3D::~Engine3D()
+Engine::~Engine()
 {
 	m_Meshes.clear();
 
@@ -39,7 +39,7 @@ Engine3D::~Engine3D()
 /// <summary>
 /// This function will initialize the glfw context and setup some window hints.
 /// </summary>
-void Engine3D::InitGLFW()
+void Engine::InitGLFW()
 {
 	//initialize GLFW
 	if (!glfwInit())
@@ -62,7 +62,7 @@ void Engine3D::InitGLFW()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 }
 
-void Engine3D::InitWindow(const char* windowTitle, bool resizable)
+void Engine::InitWindow(const char* windowTitle, bool resizable)
 {
 	glfwWindowHint(GLFW_RESIZABLE, resizable);
 
@@ -83,10 +83,10 @@ void Engine3D::InitWindow(const char* windowTitle, bool resizable)
 }
 
 
-void Engine3D::InitCallbacks()
+void Engine::InitCallbacks()
 {
 	// Set the callback of the window data to use it in different lambdas
-	SetEventCallback(BIND_EVENT_FN(Engine3D::OnEvent));
+	SetEventCallback(BIND_EVENT_FN(Engine::OnEvent));
 
 	// Set the resize window callback
 	glfwSetFramebufferSizeCallback(
@@ -184,7 +184,7 @@ void Engine3D::InitCallbacks()
 		});
 }
 
-void Engine3D::InitGlew()
+void Engine::InitGlew()
 {
 	// Allow modern extension features
 	glewExperimental = GL_TRUE;
@@ -200,7 +200,7 @@ void Engine3D::InitGlew()
 /// <summary>
 /// This function will initialize some OpenGL options.
 /// </summary>
-void Engine3D::InitOpenGLOptions()
+void Engine::InitOpenGLOptions()
 {
 	glEnable(GL_DEPTH_TEST);
 
@@ -214,18 +214,18 @@ void Engine3D::InitOpenGLOptions()
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-void Engine3D::PushMesh(const void* vertices, uint32_t sizeOfVb, const void* indices, uint32_t nbOfIndices, VertexBufferLayout layout,
+void Engine::PushMesh(const void* vertices, uint32_t sizeOfVb, const void* indices, uint32_t nbOfIndices, VertexBufferLayout layout,
 	glm::vec3 position, glm::vec3 scale, glm::vec3 rotation)
 {
 	m_Meshes.emplace_back(std::make_shared<Mesh>(vertices, sizeOfVb, indices, nbOfIndices, layout, position, scale, rotation));
 }
 
-void Engine3D::PushShader(std::string filepath)
+void Engine::PushShader(std::string filepath)
 {
 	m_Shaders.emplace_back(std::make_shared<Shader>(filepath));
 }
 
-void Engine3D::Run()
+void Engine::Run()
 {
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)m_WindowData.Width / (GLfloat)m_WindowData.Height, 0.1f, 500.0f);
 	m_Shaders[0]->Bind();
@@ -256,10 +256,10 @@ void Engine3D::Run()
 	}
 }
 
-void Engine3D::OnEvent(Event& ev)
+void Engine::OnEvent(Event& ev)
 {
 	EventDispatcher ed(ev);
-	ed.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Engine3D::SetWindowShouldClose));
+	ed.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Engine::SetWindowShouldClose));
 
 	for (auto iterator = m_LayerStack.end(); iterator != m_LayerStack.begin();)
 	{
@@ -269,7 +269,7 @@ void Engine3D::OnEvent(Event& ev)
 	}
 }
 
-bool Engine3D::SetWindowShouldClose(WindowCloseEvent& e)
+bool Engine::SetWindowShouldClose(WindowCloseEvent& e)
 {
 	m_Running = false;
 	return true;

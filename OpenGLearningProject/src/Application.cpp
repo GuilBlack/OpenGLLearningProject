@@ -1,6 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "Engine3D.h"
+#include "Engine.h"
 #include "ImGui/ImGuiLayer.h"
 
 int main()
@@ -20,7 +20,7 @@ int main()
 		0.0f, 1.0f, 0.0f
 	};
 
-	Engine3D* customEngine = new Engine3D();
+	Engine* customEngine = new Engine();
 
 	customEngine->PushMesh(vertices.data(), vertices.size() * sizeof(vertices[0]),
 		indices.data(), indices.size(), VertexBufferLayout::pLayout(),
