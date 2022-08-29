@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.h"
+#include "Inputs/InputCodes.h"
 
 class MouseButtonEvent : public Event
 {
@@ -10,15 +11,15 @@ public:
 	EVENT_CATEGORY_CLASS_DEFINE(MouseEvent | InputEvent)
 
 protected:
-	MouseButtonEvent(int button)
+	MouseButtonEvent(MouseCode button)
 		: m_Button(button) {}
-	int m_Button;
+	MouseCode m_Button;
 };
 
 class MouseButtonPressedEvent : public MouseButtonEvent
 {
 public:
-	MouseButtonPressedEvent(int button)
+	MouseButtonPressedEvent(MouseCode button)
 		: MouseButtonEvent(button) {}
 
 	std::string ToString() const override
@@ -34,7 +35,7 @@ public:
 class MouseButtonReleasedEvent : public MouseButtonEvent
 {
 public:
-	MouseButtonReleasedEvent(int button)
+	MouseButtonReleasedEvent(MouseCode button)
 		: MouseButtonEvent(button)
 	{}
 

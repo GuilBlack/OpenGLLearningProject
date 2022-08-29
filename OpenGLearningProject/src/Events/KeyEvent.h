@@ -1,5 +1,6 @@
 #pragma once
 #include "Event.h"
+#include "Inputs/InputCodes.h"
 
 class KeyEvent : public Event
 {
@@ -15,7 +16,7 @@ protected:
 class KeyPressedEvent : public KeyEvent
 {
 public:
-	KeyPressedEvent(int keyCode, int repeatCount)
+	KeyPressedEvent(KeyCode keyCode, int repeatCount)
 		: KeyEvent(keyCode), m_RepeatCount(repeatCount)
 	{}
 
@@ -36,7 +37,7 @@ private:
 class KeyReleasedEvent : public KeyEvent
 {
 public:
-	KeyReleasedEvent(int keyCode)
+	KeyReleasedEvent(KeyCode keyCode)
 		: KeyEvent(keyCode)
 	{}
 
@@ -53,8 +54,8 @@ public:
 class KeyTypedEvent : public KeyEvent
 {
 public:
-	KeyTypedEvent(int keycode)
-		: KeyEvent(keycode)
+	KeyTypedEvent(int keyCode)
+		: KeyEvent(keyCode)
 	{}
 
 	std::string ToString() const override
