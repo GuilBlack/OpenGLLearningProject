@@ -28,8 +28,6 @@ int main()
 		glm::vec3(0.4f, 0.4f, 0.4f));
 
 	customEngine->PushShader("res/shaders/Basic.shader");
-
-	customEngine->PushOverlay(new ImGuiLayer());
 	
 	customEngine->Run();
 	delete customEngine;

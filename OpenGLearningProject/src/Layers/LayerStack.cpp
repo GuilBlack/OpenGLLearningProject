@@ -2,9 +2,7 @@
 #include "LayerStack.h"
 
 LayerStack::LayerStack()
-{
-	m_LayerInsertor = m_Layers.begin();
-}
+{}
 
 LayerStack::~LayerStack()
 {
@@ -14,7 +12,8 @@ LayerStack::~LayerStack()
 
 void LayerStack::PushLayer(Layer* layer)
 {
-	m_LayerInsertor = m_Layers.emplace(m_LayerInsertor, layer);
+	m_Layers.emplace(m_Layers.begin() + m_LayerInsertorIndex, layer);
+	++m_LayerInsertorIndex;
 	layer->OnAttach();
 }
 
@@ -25,7 +24,7 @@ void LayerStack::PopLayer(Layer* layer)
 	{
 		m_Layers.erase(iterator);
 		layer->OnDetach();
-		--m_LayerInsertor;
+		--m_LayerInsertorIndex;
 	}
 }
 

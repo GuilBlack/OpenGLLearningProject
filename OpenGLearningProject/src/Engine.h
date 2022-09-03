@@ -7,6 +7,7 @@
 #include "Mesh.h"
 #include "Events/Event.h"
 #include "Layers/LayerStack.h"
+#include "ImGui/ImGuiLayer.h"
 
 class WindowCloseEvent;
 
@@ -16,7 +17,7 @@ class WindowCloseEvent;
 class Engine
 {
 public:
-	Engine(int32_t openGlMajorVersion = 3, int32_t openGlMinorVersion = 3, int32_t width = 1280, int32_t height = 720, const char* windowTitle = "Engine", bool resizable = true);
+	Engine(int32_t openGlMajorVersion = 4, int32_t openGlMinorVersion = 5, int32_t width = 1280, int32_t height = 720, const char* windowTitle = "Engine", bool resizable = true);
 	~Engine();
 	inline static Engine& GetEngine() { return *s_Engine; }
 	inline GLFWwindow& GetWindow() { return *m_Window; }
@@ -59,6 +60,7 @@ private:
 
 	Renderer m_Renderer;
 	LayerStack m_LayerStack;
+	ImGuiLayer* m_ImGuiLayer;
 	std::vector<std::shared_ptr<Shader>> m_Shaders;
 	std::vector<std::shared_ptr<Mesh>> m_Meshes;
 

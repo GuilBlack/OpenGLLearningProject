@@ -25,5 +25,5 @@ public:
 
 private:
 	LayerCollection m_Layers;
-	LayerCollection::iterator m_LayerInsertor;
+	uint32_t m_LayerInsertorIndex = 0;
 };

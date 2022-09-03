@@ -25,7 +25,12 @@ Engine::Engine(int32_t openGlMajorVersion, int32_t openGlMinorVersion, int32_t w
 	InitCallbacks();
 	InitGlew();
 	InitOpenGLOptions();
+	m_ImGuiLayer = new ImGuiLayer();
+	PushOverlay(m_ImGuiLayer);
 	ENGINE_INFO("Engine Created.");
+	ENGINE_INFO("OpenGL version: {}", (const char*)glGetString(GL_VERSION));
+	ENGINE_INFO("Vendor: {}", (const char*)glGetString(GL_VENDOR));
+	ENGINE_INFO("GPU: {}", (const char*)glGetString(GL_RENDERER));
 }
 
 Engine::~Engine()
@@ -235,6 +240,9 @@ void Engine::Run()
 		// See if any events occured
 		glfwPollEvents();
 
+		if (m_WindowData.TempWidth <= 0 || m_WindowData.TempHeight <= 0)
+			continue;
+
 		if (m_WindowData.TempWidth != m_WindowData.Width || m_WindowData.TempHeight != m_WindowData.Height)
 		{
 			m_WindowData.Width = m_WindowData.TempWidth;
@@ -251,6 +259,11 @@ void Engine::Run()
 
 		for (Layer* layer : m_LayerStack)
 			layer->OnUpdate();
+
+		m_ImGuiLayer->Begin();
+		for (Layer* layer : m_LayerStack)
+			layer->OnImGuiRender();
+		m_ImGuiLayer->End();
 
 		glfwSwapBuffers(m_Window);
 	}
