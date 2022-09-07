@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "IndexBuffer.h"
-#include "Renderer.h"
+#include "RendererCore.h"
 
 /// <summary>
 /// DO NOT USE THIS!

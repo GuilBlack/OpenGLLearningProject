@@ -3,7 +3,7 @@
 
 #include <GL/glew.h>
 
-#include "Renderer.h"
+#include "RendererCore.h"
 
 Shader::Shader(const std::string& filepath)
 	: m_FilePath(filepath)

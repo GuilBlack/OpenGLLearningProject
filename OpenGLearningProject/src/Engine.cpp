@@ -6,6 +6,8 @@
 #include "Events/WindowEvent.h"
 #include "Events/MouseEvent.h"
 #include "Events/KeyEvent.h"
+#include "Renderer/Renderer.h"
+#include "Renderer/RenderCommand.h"
 
 Engine* Engine::s_Engine = nullptr;
 
@@ -24,7 +26,8 @@ Engine::Engine(int32_t openGlMajorVersion, int32_t openGlMinorVersion, int32_t w
 	InitWindow(windowTitle, resizable);
 	InitCallbacks();
 	InitGlew();
-	InitOpenGLOptions();
+	Renderer::Init();
+
 	m_ImGuiLayer = new ImGuiLayer();
 	PushOverlay(m_ImGuiLayer);
 	ENGINE_INFO("Engine Created.");
@@ -232,6 +235,7 @@ void Engine::PushShader(std::string filepath)
 
 void Engine::Run()
 {
+	RenderCommand::SetClearColor({ 0.1f, 0.1f , 0.1f , 1.0f });
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)m_WindowData.Width / (GLfloat)m_WindowData.Height, 0.1f, 500.0f);
 	m_Shaders[0]->Bind();
 	m_Shaders[0]->SetUniformMatrix4fv("projection", projection);
@@ -252,7 +256,7 @@ void Engine::Run()
 			m_Shaders[0]->SetUniformMatrix4fv("projection", projection);
 		}
 
-		m_Renderer.Clean();
+		RenderCommand::Clear();
 		
 		m_Meshes[0]->Rotate(glm::vec3(0.0f, 0.2f, 0.0f));
 		m_Meshes[0]->Draw(m_Shaders[0]);

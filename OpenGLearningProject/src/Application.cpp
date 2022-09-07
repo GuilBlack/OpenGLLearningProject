@@ -14,16 +14,22 @@ int main()
 	};
 
 	std::vector<float> vertices = {
-		-1.0f, -1.0f, 0.0f,
-		0.0f, -1.0f, 1.0f,
-		1.0f, -1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f
+		-1.0f, -1.0f, 0.0f, 0.1f, 0.1f, 0.4f, 1.0f,
+		0.0f, -1.0f, 1.0f, 0.1f, 0.1f, 0.4f, 1.0f,
+		1.0f, -1.0f, 0.0f, 0.1f, 0.1f, 0.4f, 1.0f,
+		0.0f, 1.0f, 0.0f, 0.1f, 0.1f, 0.4f, 1.0f
 	};
 
 	Engine* customEngine = new Engine();
 
+	VertexBufferLayout layout = VertexBufferLayout(
+		{
+			{ "pos", GL_FLOAT, 3 },
+			{ "col", GL_FLOAT, 4 }
+		});
+
 	customEngine->PushMesh(vertices.data(), vertices.size() * sizeof(vertices[0]),
-		indices.data(), indices.size(), VertexBufferLayout::pLayout(),
+		indices.data(), indices.size(), layout,
 		glm::vec3(0.0f, 0.0f, -3.0f),
 		glm::vec3(0.4f, 0.4f, 0.4f));
 

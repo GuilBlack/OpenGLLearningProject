@@ -15,6 +15,7 @@ private:
 
 #ifdef DEBUG
 
+#define ENGINE_CRITICAL(...) Log::GetEngineLogger()->critical(__VA_ARGS__)
 #define ENGINE_ERROR(...) Log::GetEngineLogger()->error(__VA_ARGS__)
 #define ENGINE_WARN(...)  Log::GetEngineLogger()->warn(__VA_ARGS__)
 #define ENGINE_INFO(...)  Log::GetEngineLogger()->info(__VA_ARGS__)

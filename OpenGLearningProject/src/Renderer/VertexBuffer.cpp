@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "VertexBuffer.h"
-
-#include "Renderer.h"
+#include "RendererCore.h"
 
 VertexBuffer::VertexBuffer()
 	: m_Size(0)

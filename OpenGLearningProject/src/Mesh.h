@@ -1,6 +1,8 @@
 #pragma once
 
-#include "VertexBufferLayout.h"
+#include "Renderer/VertexBufferLayout.h"
+#include "Renderer/Shader.h"
+#include "Renderer/VertexArray.h"
 
 class Mesh
 {
@@ -29,8 +31,6 @@ private:
 	const void* m_Indices;
 
 	VertexArray m_Va;
-	IndexBuffer m_Ib;
-	VertexBuffer m_Vb;
 	VertexBufferLayout m_Layout;
 
 	glm::vec3 m_Position;

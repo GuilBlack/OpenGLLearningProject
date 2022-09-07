@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "Renderer.h"
+#include "Renderer/Renderer.h"
 #include "Mesh.h"
 #include "Events/Event.h"
 #include "Layers/LayerStack.h"
