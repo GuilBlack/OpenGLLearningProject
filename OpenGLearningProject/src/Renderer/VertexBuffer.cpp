@@ -1,11 +1,14 @@
 #include "pch.h"
 #include "VertexBuffer.h"
-#include "RendererCore.h"
+#include "Renderer.h"
 
 VertexBuffer::VertexBuffer()
-	: m_Size(0)
+	: m_RendererID(0), m_Size(0)
 {
-	GlCall(glGenBuffers(1, &m_RendererId));
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+		{
+			glGenBuffers(1, &m_RendererID);
+		});
 }
 
 /// <summary>
@@ -14,33 +17,42 @@ VertexBuffer::VertexBuffer()
 /// <param name="data">Array of vertices to pass to the vertex buffer</param>
 /// <param name="size">Size of the array in bytes</param>
 VertexBuffer::VertexBuffer(const void* data, uint32_t size)
-	: m_Size(size)
+	: m_RendererID(0), m_Size(size)
 {
-	GlCall(glGenBuffers(1, &m_RendererId));
-	Bind();
-	GlCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
-	Unbind();
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, data]()
+		{
+			glGenBuffers(1, &m_RendererID);
+			Bind();
+			glBufferData(GL_ARRAY_BUFFER, m_Size, data, GL_STATIC_DRAW);
+			Unbind();
+		});
 }
 
 VertexBuffer::~VertexBuffer()
 {
-	GlCall(glDeleteBuffers(1, &m_RendererId));
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+		{
+			glDeleteBuffers(1, &m_RendererID);
+		});
 }
 
 void VertexBuffer::AddData(const void* data, uint32_t size)
 {
 	m_Size = size;
-	Bind();
-	GlCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
-	Unbind();
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, data]()
+		{
+			Bind();
+			glBufferData(GL_ARRAY_BUFFER, m_Size, data, GL_STATIC_DRAW);
+			Unbind();
+		});
 }
 
 void VertexBuffer::Bind() const
 {
-	GlCall(glBindBuffer(GL_ARRAY_BUFFER, m_RendererId));
+	glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 }
 
 void VertexBuffer::Unbind() const
 {
-	GlCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

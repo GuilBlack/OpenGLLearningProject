@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Mesh.h"
+#include "Renderer/Renderer.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -8,8 +9,12 @@ Mesh::Mesh(const void* vertices, uint32_t sizeOfVb, const void* indices, uint32_
 	: m_Vertices(vertices), m_Indices(indices), m_Layout(layout), 
 		m_Position(position), m_Scale(scale), m_Rotation(rotation)
 {
-	std::shared_ptr<VertexBuffer> vb = std::make_shared<VertexBuffer>(vertices, sizeOfVb);
-	std::shared_ptr<IndexBuffer> ib = std::make_shared<IndexBuffer>(indices, nbOfIndices);
+	std::shared_ptr<VertexBuffer> vb;
+	std::shared_ptr<IndexBuffer> ib;
+
+	vb.reset(new VertexBuffer(vertices, sizeOfVb));
+	ib.reset(new IndexBuffer(indices, nbOfIndices));
+
 	vb->SetLayout(layout);
 
 	m_Va.AddVertexBuffer(vb);
@@ -27,7 +32,7 @@ void Mesh::Draw(Shader& shader)
 
 	shader.Bind();
 	m_Va.Bind();
-	GlCall(glDrawElements(GL_TRIANGLES, m_Va.GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0));
+	glDrawElements(GL_TRIANGLES, m_Va.GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
 }
 
 void Mesh::Draw(std::shared_ptr<Shader> shader)
@@ -35,9 +40,12 @@ void Mesh::Draw(std::shared_ptr<Shader> shader)
 	UpdateModelMatrix();
 	UpdateUniforms(shader);
 
-	shader->Bind();
-	m_Va.Bind();
-	GlCall(glDrawElements(GL_TRIANGLES, m_Va.GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0));
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, shader]()
+		{
+			shader->Bind();
+			m_Va.Bind();
+			glDrawElements(GL_TRIANGLES, m_Va.GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, 0);
+		});
 }
 
 void Mesh::MoveTo(glm::vec3 position)

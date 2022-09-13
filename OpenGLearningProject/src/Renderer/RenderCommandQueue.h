@@ -13,5 +13,6 @@ public:
 
 private:
 	std::deque<CommandFn> m_CommandQueue;
+	std::thread m_RenderThread;
 };
 

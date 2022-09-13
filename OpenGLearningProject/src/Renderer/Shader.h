@@ -15,6 +15,8 @@ public:
 
 	void Bind() const;
 	void Unbind() const;
+	void BindCommand() const;
+	void UnbindCommand() const;
 
 	//Set uniforms
 	void SetUniformMatrix4fv(const std::string& uniformName, const glm::mat4& matrix);
@@ -27,7 +29,7 @@ private:
 private:
 	ShaderSourceProgram ParseShader(const std::string& filepath);
 	void CompileShader(uint32_t& program, uint32_t type, const std::string& source);
-	uint32_t CreateShaderProgram(const std::string& vertexShader, const std::string& fragmentShader);
+	void CreateShaderProgram();
 	int32_t GetUniformLocation(const std::string& uniformName);
 };
 

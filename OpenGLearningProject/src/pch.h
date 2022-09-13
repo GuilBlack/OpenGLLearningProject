@@ -8,6 +8,7 @@
 #include <utility>
 #include <cmath>
 #include <type_traits>
+#include <thread>
 
 #include <string>
 #include <sstream>

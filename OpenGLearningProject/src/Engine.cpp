@@ -230,14 +230,16 @@ void Engine::PushMesh(const void* vertices, uint32_t sizeOfVb, const void* indic
 
 void Engine::PushShader(std::string filepath)
 {
-	m_Shaders.emplace_back(std::make_shared<Shader>(filepath));
+	std::shared_ptr<Shader> shader;
+	shader.reset(new Shader(filepath));
+	m_Shaders.emplace_back(shader);
 }
 
 void Engine::Run()
 {
-	RenderCommand::SetClearColor({ 0.1f, 0.1f , 0.1f , 1.0f });
+	Renderer::SetClearColor({ 0.1f, 0.1f , 0.1f , 1.0f });
 	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)m_WindowData.Width / (GLfloat)m_WindowData.Height, 0.1f, 500.0f);
-	m_Shaders[0]->Bind();
+	m_Shaders[0]->BindCommand();
 	m_Shaders[0]->SetUniformMatrix4fv("projection", projection);
 	while (m_Running)
 	{
@@ -252,11 +254,11 @@ void Engine::Run()
 			m_WindowData.Width = m_WindowData.TempWidth;
 			m_WindowData.Height = m_WindowData.TempHeight;
 			glm::mat4 projection = glm::perspective(45.0f, (GLfloat)m_WindowData.Width / (GLfloat)m_WindowData.Height, 0.1f, 500.0f);
-			m_Shaders[0]->Bind();
+			m_Shaders[0]->BindCommand();
 			m_Shaders[0]->SetUniformMatrix4fv("projection", projection);
 		}
 
-		RenderCommand::Clear();
+		Renderer::BeginFrame();
 		
 		m_Meshes[0]->Rotate(glm::vec3(0.0f, 0.2f, 0.0f));
 		m_Meshes[0]->Draw(m_Shaders[0]);
@@ -264,12 +266,15 @@ void Engine::Run()
 		for (Layer* layer : m_LayerStack)
 			layer->OnUpdate();
 
-		m_ImGuiLayer->Begin();
-		for (Layer* layer : m_LayerStack)
-			layer->OnImGuiRender();
-		m_ImGuiLayer->End();
+		Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+			{
+				m_ImGuiLayer->Begin();
+				for (Layer* layer : m_LayerStack)
+					layer->OnImGuiRender();
+				m_ImGuiLayer->End();
+			});
 
-		glfwSwapBuffers(m_Window);
+		Renderer::EndFrame();
 	}
 }
 

@@ -17,7 +17,7 @@ public:
 	void SetLayout(const VertexBufferLayout& layout) { m_Layout = layout; }
 
 private:
-	uint32_t m_RendererId;
+	uint32_t m_RendererID;
 	uint32_t m_Size;
 	VertexBufferLayout m_Layout;
 };

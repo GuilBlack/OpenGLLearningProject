@@ -3,33 +3,54 @@
 
 #include <GL/glew.h>
 
-#include "RendererCore.h"
+#include "Renderer.h"
 
 Shader::Shader(const std::string& filepath)
 	: m_FilePath(filepath)
 {
-	ShaderSourceProgram source = ParseShader(m_FilePath);
-	m_RendererID = CreateShaderProgram(source.VertexSource, source.FragmentSource);
+	CreateShaderProgram();
 }
 
 Shader::~Shader()
 {
-	glDeleteProgram(m_RendererID);
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+		{
+			glDeleteProgram(m_RendererID);
+		});
 }
 
 void Shader::Bind() const
 {
-	GlCall(glUseProgram(m_RendererID));
+	glUseProgram(m_RendererID);
 }
 
 void Shader::Unbind() const
 {
-	GlCall(glUseProgram(0));
+	glUseProgram(0);
+}
+
+void Shader::BindCommand() const
+{
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+		{
+			glUseProgram(m_RendererID);
+		});
+}
+
+void Shader::UnbindCommand() const
+{
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([]()
+		{
+			glUseProgram(0);
+		});
 }
 
 void Shader::SetUniformMatrix4fv(const std::string& uniformName, const glm::mat4& matrix)
 {
-	GlCall(glUniformMatrix4fv(GetUniformLocation(uniformName), 1, GL_FALSE, &matrix[0][0]));
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, uniformName, matrix]()
+		{
+			glUniformMatrix4fv(GetUniformLocation(uniformName), 1, GL_FALSE, &matrix[0][0]);
+		});
 }
 
 ShaderSourceProgram Shader::ParseShader(const std::string& filepath)
@@ -65,52 +86,43 @@ ShaderSourceProgram Shader::ParseShader(const std::string& filepath)
 
 void Shader::CompileShader(uint32_t& program, uint32_t type, const std::string& source)
 {
-	uint32_t id;
+	uint32_t id = glCreateShader(type);
 	const char* src = source.c_str();
 
-	GlCallReturns(glCreateShader(type), id);
-	GlCall(glShaderSource(id, 1, &src, NULL));
-	GlCall(glCompileShader(id));
+	glShaderSource(id, 1, &src, NULL);
+	glCompileShader(id);
 
 	int32_t compiledShader;
-	GlCall(glGetShaderiv(id, GL_COMPILE_STATUS, &compiledShader));
+	glGetShaderiv(id, GL_COMPILE_STATUS, &compiledShader);
 	if (compiledShader != GL_TRUE)
 	{
-		int length;
-		GlCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
-		char* message = (char*)alloca(length * sizeof(char));
-		GlCall(glGetShaderInfoLog(id, length, &length, message));
-		std::cout << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader:" << std::endl;
-		std::cout << message << std::endl;
-
-		GlCall(glDeleteShader(id));
+		ENGINE_ERROR("Couldn't compile shaders.");
+		glDeleteShader(id);
 	}
 
-	GlCall(glAttachShader(program, id));
+	glAttachShader(program, id);
 }
 
-uint32_t Shader::CreateShaderProgram(const std::string& vertexShader, const std::string& fragmentShader)
+void Shader::CreateShaderProgram()
 {
-	uint32_t program;
-	GlCallReturns(glCreateProgram(), program);
-	CompileShader(program, GL_VERTEX_SHADER, vertexShader);
-	CompileShader(program, GL_FRAGMENT_SHADER, fragmentShader);
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+		{
+			auto[vertexShader, fragmentShader] = ParseShader(m_FilePath);
+			uint32_t program = glCreateProgram();
+			CompileShader(program, GL_VERTEX_SHADER, vertexShader);
+			CompileShader(program, GL_FRAGMENT_SHADER, fragmentShader);
 
-	GlCall(glLinkProgram(program));
+			glLinkProgram(program);
 
-	int32_t linkedProgram;
-	GlCall(glGetProgramiv(program, GL_LINK_STATUS, &linkedProgram));
-	if (linkedProgram != GL_TRUE)
-	{
-		int32_t length;
-		GlCall(glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length));
-		char* message = (char*)alloca(length * sizeof(char));
+			int32_t linkedProgram;
+			glGetProgramiv(program, GL_LINK_STATUS, &linkedProgram);
+			if (linkedProgram != GL_TRUE)
+			{
+				ENGINE_ERROR("Couldn't link shaders.");
+			}
 
-		std::cout << "Failed to compile program:" << std::endl;
-		std::cout << message << std::endl;
-	}
-
-	return program;
+			m_RendererID = program;
+		});
 }
 
 int32_t Shader::GetUniformLocation(const std::string& uniformName)
@@ -118,7 +130,7 @@ int32_t Shader::GetUniformLocation(const std::string& uniformName)
 	if (m_UniformLocationCache.find(uniformName) != m_UniformLocationCache.end())
 		return m_UniformLocationCache[uniformName];
 	
-	GlCall(int32_t location = glGetUniformLocation(m_RendererID, uniformName.c_str()));
+	int32_t location = glGetUniformLocation(m_RendererID, uniformName.c_str());
 	if (location == -1)
 		std::cout << "[Warning] Uniform '" << uniformName << "' doesn't exist." << std::endl;
 
