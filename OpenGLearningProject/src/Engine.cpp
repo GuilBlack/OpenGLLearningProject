@@ -25,7 +25,7 @@ Engine::Engine(int32_t openGlMajorVersion, int32_t openGlMinorVersion, int32_t w
 	InitGLFW();
 	InitWindow(windowTitle, resizable);
 	InitCallbacks();
-	InitGlew();
+	//InitGlew();
 	Renderer::Init();
 
 	m_ImGuiLayer = new ImGuiLayer();
@@ -82,7 +82,7 @@ void Engine::InitWindow(const char* windowTitle, bool resizable)
 	}
 	
 	// Set OpenGL context for GLEW
-	glfwMakeContextCurrent(m_Window);
+	//glfwMakeContextCurrent(m_Window);
 
 	// Set window user data
 	glfwSetWindowUserPointer(m_Window, static_cast<void*>(&m_WindowData));
@@ -238,9 +238,6 @@ void Engine::PushShader(std::string filepath)
 void Engine::Run()
 {
 	Renderer::SetClearColor({ 0.1f, 0.1f , 0.1f , 1.0f });
-	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)m_WindowData.Width / (GLfloat)m_WindowData.Height, 0.1f, 500.0f);
-	m_Shaders[0]->BindCommand();
-	m_Shaders[0]->SetUniformMatrix4fv("projection", projection);
 	while (m_Running)
 	{
 		// See if any events occured
@@ -251,30 +248,26 @@ void Engine::Run()
 
 		if (m_WindowData.TempWidth != m_WindowData.Width || m_WindowData.TempHeight != m_WindowData.Height)
 		{
+			m_WindowData.DidWindowDimensionsChange = true;
 			m_WindowData.Width = m_WindowData.TempWidth;
 			m_WindowData.Height = m_WindowData.TempHeight;
-			glm::mat4 projection = glm::perspective(45.0f, (GLfloat)m_WindowData.Width / (GLfloat)m_WindowData.Height, 0.1f, 500.0f);
-			m_Shaders[0]->BindCommand();
-			m_Shaders[0]->SetUniformMatrix4fv("projection", projection);
 		}
 
 		Renderer::BeginFrame();
-		
-		m_Meshes[0]->Rotate(glm::vec3(0.0f, 0.2f, 0.0f));
-		m_Meshes[0]->Draw(m_Shaders[0]);
 
 		for (Layer* layer : m_LayerStack)
 			layer->OnUpdate();
 
+		m_ImGuiLayer->Begin();
 		Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
 			{
-				m_ImGuiLayer->Begin();
 				for (Layer* layer : m_LayerStack)
 					layer->OnImGuiRender();
-				m_ImGuiLayer->End();
 			});
+		m_ImGuiLayer->End();
 
 		Renderer::EndFrame();
+		m_WindowData.DidWindowDimensionsChange = false;
 	}
 }
 
@@ -294,5 +287,6 @@ void Engine::OnEvent(Event& ev)
 bool Engine::SetWindowShouldClose(WindowCloseEvent& e)
 {
 	m_Running = false;
+	Renderer::GetRenderer().Shutdown();
 	return true;
 }

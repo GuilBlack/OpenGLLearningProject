@@ -19,6 +19,11 @@ Shader::~Shader()
 		});
 }
 
+Shader* Shader::Create(const std::string& filepath)
+{
+	return new Shader(filepath);
+}
+
 void Shader::Bind() const
 {
 	glUseProgram(m_RendererID);

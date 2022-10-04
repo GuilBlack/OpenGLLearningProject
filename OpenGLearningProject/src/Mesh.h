@@ -7,11 +7,17 @@
 class Mesh
 {
 public:
+	Mesh() {};
 	Mesh(const void* vertices, uint32_t sizeOfVb, const void* indices, uint32_t nbOfIndices, VertexBufferLayout layout,
 		glm::vec3 position = glm::vec3(0.0f),
 		glm::vec3 scale = glm::vec3(1.0f),
 		glm::vec3 rotation = glm::vec3(0.0f));
 	~Mesh();
+
+	static Mesh* Create(const void* vertices, uint32_t sizeOfVb, const void* indices, uint32_t nbOfIndices, VertexBufferLayout layout,
+		glm::vec3 position = glm::vec3(0.0f),
+		glm::vec3 scale = glm::vec3(1.0f),
+		glm::vec3 rotation = glm::vec3(0.0f));
 
 	void Draw(Shader& shader);
 	void Draw(std::shared_ptr<Shader> shader);
@@ -27,9 +33,6 @@ public:
 	void SetScale(glm::vec3 scale);
 
 private:
-	const void* m_Vertices;
-	const void* m_Indices;
-
 	VertexArray m_Va;
 	VertexBufferLayout m_Layout;
 

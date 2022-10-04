@@ -17,51 +17,63 @@ ImGuiLayer::~ImGuiLayer()
 
 void ImGuiLayer::OnAttach()
 {
-	// Setup Dear ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([]()
+		{
+			// Setup Dear ImGui context
+			IMGUI_CHECKVERSION();
+			ImGui::CreateContext();
+			ImGuiIO& io = ImGui::GetIO(); (void)io;
+			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+			io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
+			// Setup Dear ImGui style
+			ImGui::StyleColorsDark();
 
-	// Setup Platform/Renderer backends
-	Engine& engine =  Engine::GetEngine();
-	ImGui_ImplGlfw_InitForOpenGL(&engine.GetWindow(), true);
-	ImGui_ImplOpenGL3_Init("#version 420");
+			// Setup Platform/Renderer backends
+			Engine& engine =  Engine::GetEngine();
+			ImGui_ImplGlfw_InitForOpenGL(&engine.GetWindow(), true);
+			ImGui_ImplOpenGL3_Init("#version 420");
+		});
 }
 
 void ImGuiLayer::OnDetach()
 {
-	ImGui_ImplGlfw_Shutdown();
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui::DestroyContext();
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([]()
+		{
+			ImGui_ImplGlfw_Shutdown();
+			ImGui_ImplOpenGL3_Shutdown();
+			ImGui::DestroyContext();
+		});
 }
 
 void ImGuiLayer::Begin()
 {
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([]()
+		{
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+		});
 }
 
 void ImGuiLayer::End()
 {
-	ImGuiIO io = ImGui::GetIO();
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([]()
+		{
+			ImGuiIO io = ImGui::GetIO();
 
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		GLFWwindow* backup_current_context = glfwGetCurrentContext();
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-		glfwMakeContextCurrent(backup_current_context);
-	}
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				GLFWwindow* backup_current_context = glfwGetCurrentContext();
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault();
+				glfwMakeContextCurrent(backup_current_context);
+			}
+		});
 }
 
 void ImGuiLayer::OnImGuiRender()

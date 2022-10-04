@@ -21,6 +21,11 @@ public:
 	~Engine();
 	inline static Engine& GetEngine() { return *s_Engine; }
 	inline GLFWwindow& GetWindow() { return *m_Window; }
+	std::pair<int32_t, int32_t> GetWindowDimensions() { return { m_WindowData.Width, m_WindowData.Height }; }
+	inline bool DidWindowDimensionsChange()
+	{
+		return m_WindowData.DidWindowDimensionsChange;
+	}
 
 	void Run();
 
@@ -47,18 +52,18 @@ private:
 	{
 		std::string Title;
 		int32_t Width, Height, TempWidth, TempHeight;
+		bool DidWindowDimensionsChange;
 
 		EventCallbackFn EventCallback;
 		
-		WindowData(std::string title, int32_t width, int32_t height, int32_t tempWidth, int32_t tempHeight)
-			: Title(title), Width(width), Height(height), TempWidth(tempWidth), TempHeight(tempHeight) {}
+		WindowData(std::string title, int32_t width, int32_t height, int32_t tempWidth, int32_t tempHeight, bool didWindowDimensionsChange = false)
+			: Title(title), Width(width), Height(height), TempWidth(tempWidth), TempHeight(tempHeight), DidWindowDimensionsChange(didWindowDimensionsChange) {}
 	};
 	
 	bool m_Resizable;
 	WindowData m_WindowData;
 	GLFWwindow* m_Window;
 
-	Renderer m_Renderer;
 	LayerStack m_LayerStack;
 	ImGuiLayer* m_ImGuiLayer;
 	std::vector<std::shared_ptr<Shader>> m_Shaders;

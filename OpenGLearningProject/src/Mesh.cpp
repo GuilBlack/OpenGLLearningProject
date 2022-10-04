@@ -6,8 +6,7 @@
 
 Mesh::Mesh(const void* vertices, uint32_t sizeOfVb, const void* indices, uint32_t nbOfIndices, VertexBufferLayout layout, 
 	glm::vec3 position, glm::vec3 scale, glm::vec3 rotation)
-	: m_Vertices(vertices), m_Indices(indices), m_Layout(layout), 
-		m_Position(position), m_Scale(scale), m_Rotation(rotation)
+	: m_Layout(layout), m_Position(position), m_Scale(scale), m_Rotation(rotation)
 {
 	std::shared_ptr<VertexBuffer> vb;
 	std::shared_ptr<IndexBuffer> ib;
@@ -24,6 +23,11 @@ Mesh::Mesh(const void* vertices, uint32_t sizeOfVb, const void* indices, uint32_
 
 Mesh::~Mesh()
 {}
+
+Mesh* Mesh::Create(const void* vertices, uint32_t sizeOfVb, const void* indices, uint32_t nbOfIndices, VertexBufferLayout layout, glm::vec3 position, glm::vec3 scale, glm::vec3 rotation)
+{
+	return new Mesh(vertices, sizeOfVb, indices, nbOfIndices, layout, position, scale, rotation);
+}
 
 void Mesh::Draw(Shader& shader)
 {

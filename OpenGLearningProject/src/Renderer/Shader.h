@@ -12,6 +12,7 @@ class Shader
 public:
 	Shader(const std::string& filepath);
 	~Shader();
+	static Shader* Create(const std::string& filepath);
 
 	void Bind() const;
 	void Unbind() const;

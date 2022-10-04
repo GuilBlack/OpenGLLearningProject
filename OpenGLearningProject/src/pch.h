@@ -9,6 +9,11 @@
 #include <cmath>
 #include <type_traits>
 #include <thread>
+#include <mutex>
+#include <atomic>
+#include <chrono>
+
+using namespace std::chrono_literals;
 
 #include <string>
 #include <sstream>

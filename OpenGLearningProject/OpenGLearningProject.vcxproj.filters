@@ -951,9 +951,6 @@
     <ClInclude Include="src\Renderer\RendererCore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderer\RenderCommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Renderer\RenderCommandQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1023,9 +1020,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Inputs\Input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderer\RenderCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\RenderCommandQueue.cpp">
