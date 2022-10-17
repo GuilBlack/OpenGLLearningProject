@@ -21,9 +21,7 @@ void RenderCommandQueue::Shutdown()
 
 RenderCommandQueue::~RenderCommandQueue()
 {
-	//m_Running = false;
-	//if (m_RenderThread.joinable())
-	//	m_RenderThread.join();
+	Shutdown();
 }
 
 void RenderCommandQueue::PushCommand(CommandFn fn)
@@ -69,6 +67,16 @@ void RenderCommandQueue::Run(GLFWwindow* window)
 		glfwTerminate();
 		m_Running = false;
 	}
+
+	ENGINE_INFO("Render Thread Created");
+	ENGINE_INFO("OpenGL version: {}", (const char*)glGetString(GL_VERSION));
+	ENGINE_INFO("Vendor: {}", (const char*)glGetString(GL_VENDOR));
+	ENGINE_INFO("GPU: {}", (const char*)glGetString(GL_RENDERER));
+	int32_t texInfo;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &texInfo);
+	ENGINE_INFO("Max Texture Size: {}", texInfo);
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &texInfo);
+	ENGINE_INFO("Max Texture Slots: {}", texInfo);
 
 	while (m_Running || !m_SafeExit)
 	{

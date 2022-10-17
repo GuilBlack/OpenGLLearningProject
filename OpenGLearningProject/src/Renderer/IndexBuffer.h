@@ -5,6 +5,7 @@ class IndexBuffer
 public:
 	IndexBuffer();
 	IndexBuffer(const void* data, uint32_t count);
+	IndexBuffer(const std::vector<uint32_t>& data, uint32_t count);
 	~IndexBuffer();
 
 	void AddData(const void* data, uint32_t count);

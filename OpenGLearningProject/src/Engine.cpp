@@ -7,7 +7,6 @@
 #include "Events/MouseEvent.h"
 #include "Events/KeyEvent.h"
 #include "Renderer/Renderer.h"
-#include "Renderer/RenderCommand.h"
 
 Engine* Engine::s_Engine = nullptr;
 
@@ -31,9 +30,6 @@ Engine::Engine(int32_t openGlMajorVersion, int32_t openGlMinorVersion, int32_t w
 	m_ImGuiLayer = new ImGuiLayer();
 	PushOverlay(m_ImGuiLayer);
 	ENGINE_INFO("Engine Created.");
-	ENGINE_INFO("OpenGL version: {}", (const char*)glGetString(GL_VERSION));
-	ENGINE_INFO("Vendor: {}", (const char*)glGetString(GL_VENDOR));
-	ENGINE_INFO("GPU: {}", (const char*)glGetString(GL_RENDERER));
 }
 
 Engine::~Engine()
@@ -80,6 +76,9 @@ void Engine::InitWindow(const char* windowTitle, bool resizable)
 		ENGINE_ERROR("GLFW window creation failed!");
 		glfwTerminate();
 	}
+
+	glfwGetWindowPos(m_Window, &m_WindowData.PosX, &m_WindowData.PosY);
+	ENGINE_INFO("PosX: {0}, PosY: {1}", m_WindowData.PosX, m_WindowData.PosY);
 	
 	// Set OpenGL context for GLEW
 	//glfwMakeContextCurrent(m_Window);
@@ -96,12 +95,26 @@ void Engine::InitCallbacks()
 	// Set the callback of the window data to use it in different lambdas
 	SetEventCallback(BIND_EVENT_FN(Engine::OnEvent));
 
+	// Set the window position callback
+	glfwSetWindowPosCallback(
+		m_Window,
+		[](GLFWwindow* window, int32_t xpos, int32_t ypos)
+		{
+			WindowData& wData = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+			wData.PosX = xpos;
+			wData.PosY = ypos;
+		}
+	);
+
 	// Set the resize window callback
 	glfwSetFramebufferSizeCallback(
 		m_Window,
 		[](GLFWwindow* window, int32_t fbWidth, int32_t fbHeight)
 		{
-			glViewport(0, 0, fbWidth, fbHeight);
+			Renderer::GetRenderer().GetCommandQueue().PushCommand([fbWidth, fbHeight]()
+				{
+					glViewport(0, 0, fbWidth, fbHeight);
+				});
 			WindowData& wData = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 			wData.TempWidth = fbWidth;
 			wData.TempHeight = fbHeight;
@@ -237,7 +250,7 @@ void Engine::PushShader(std::string filepath)
 
 void Engine::Run()
 {
-	Renderer::SetClearColor({ 0.1f, 0.1f , 0.1f , 1.0f });
+	Renderer::SetClearColor({ 1.f, 0.f , 1.f , 1.0f });
 	while (m_Running)
 	{
 		// See if any events occured

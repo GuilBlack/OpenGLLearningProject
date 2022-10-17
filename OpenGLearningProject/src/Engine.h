@@ -22,6 +22,7 @@ public:
 	inline static Engine& GetEngine() { return *s_Engine; }
 	inline GLFWwindow& GetWindow() { return *m_Window; }
 	std::pair<int32_t, int32_t> GetWindowDimensions() { return { m_WindowData.Width, m_WindowData.Height }; }
+	std::pair<int32_t, int32_t> GetWindowPos() { return { m_WindowData.PosX, m_WindowData.PosY}; }
 	inline bool DidWindowDimensionsChange()
 	{
 		return m_WindowData.DidWindowDimensionsChange;
@@ -52,12 +53,14 @@ private:
 	{
 		std::string Title;
 		int32_t Width, Height, TempWidth, TempHeight;
+		int32_t PosX, PosY;
 		bool DidWindowDimensionsChange;
 
 		EventCallbackFn EventCallback;
 		
-		WindowData(std::string title, int32_t width, int32_t height, int32_t tempWidth, int32_t tempHeight, bool didWindowDimensionsChange = false)
-			: Title(title), Width(width), Height(height), TempWidth(tempWidth), TempHeight(tempHeight), DidWindowDimensionsChange(didWindowDimensionsChange) {}
+		WindowData(std::string title, int32_t width, int32_t height, int32_t tempWidth, int32_t tempHeight)
+			: Title(title), Width(width), Height(height), TempWidth(tempWidth), TempHeight(tempHeight), 
+			PosX(0), PosY(0), DidWindowDimensionsChange(false) {}
 	};
 	
 	bool m_Resizable;

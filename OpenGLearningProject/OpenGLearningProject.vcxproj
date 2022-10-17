@@ -175,7 +175,7 @@
     <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\Engine.h" />
-    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Renderer\Camera.h" />
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Renderer\IndexBuffer.h" />
     <ClInclude Include="src\Renderer\Renderer.h" />
@@ -474,6 +474,8 @@
     <ClInclude Include="src\Renderer\VertexArray.h" />
     <ClInclude Include="src\Renderer\VertexBuffer.h" />
     <ClInclude Include="src\Renderer\VertexBufferLayout.h" />
+    <ClInclude Include="src\Renderer\Texture.h" />
+    <ClInclude Include="src\vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Renderer\RenderCommandQueue.cpp" />
@@ -486,7 +488,7 @@
     </ClCompile>
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\Engine.cpp" />
-    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Renderer\Camera.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
@@ -505,6 +507,11 @@
     <ClCompile Include="src\vendor\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
+    <ClCompile Include="src\Renderer\Texture.cpp" />
+    <ClCompile Include="src\vendor\stb_image\stb_image.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Basic.shader" />
@@ -644,6 +651,10 @@
     <None Include="src\vendor\glm\gtx\vector_angle.inl" />
     <None Include="src\vendor\glm\gtx\vector_query.inl" />
     <None Include="src\vendor\glm\gtx\wrap.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\textures\earth.jpg" />
+    <Image Include="res\textures\UVCheckerMap.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -28,6 +28,23 @@ VertexBuffer::VertexBuffer(const void* data, uint32_t size)
 		});
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="data">Vector of vertices to pass to the vertex buffer</param>
+/// <param name="size">Size of the array in bytes</param>
+VertexBuffer::VertexBuffer(const std::vector<float>& data, uint32_t size)
+	: m_RendererID(0), m_Size(size)
+{
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, data]()
+		{
+			glGenBuffers(1, &m_RendererID);
+			Bind();
+			glBufferData(GL_ARRAY_BUFFER, m_Size, data.data(), GL_STATIC_DRAW);
+			Unbind();
+		});
+}
+
 VertexBuffer::~VertexBuffer()
 {
 	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()

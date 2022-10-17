@@ -6,6 +6,7 @@ class VertexBuffer
 public:
 	VertexBuffer();
 	VertexBuffer(const void* data, uint32_t size);
+	VertexBuffer(const std::vector<float>& data, uint32_t size);
 	~VertexBuffer();
 
 	void AddData(const void* data, uint32_t size);

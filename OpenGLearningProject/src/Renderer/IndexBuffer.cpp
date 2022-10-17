@@ -31,6 +31,23 @@ IndexBuffer::IndexBuffer(const void* data, uint32_t count)
 		});
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="data">The array of indices to store in an Index Buffer</param>
+/// <param name="count">Number of indices</param>
+IndexBuffer::IndexBuffer(const std::vector<uint32_t>& data, uint32_t count)
+	: m_RendererID(0), m_Count(count)
+{
+	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, data]()
+		{
+			glGenBuffers(1, &m_RendererID);
+			Bind();
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Count * sizeof(uint32_t), data.data(), GL_STATIC_DRAW);
+			Unbind();
+		});
+}
+
 IndexBuffer::~IndexBuffer()
 {
 	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()

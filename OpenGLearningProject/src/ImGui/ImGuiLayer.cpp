@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "ImGuiLayer.h"
-#include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include "Inputs/InputCodes.h"
@@ -25,7 +24,7 @@ void ImGuiLayer::OnAttach()
 			ImGuiIO& io = ImGui::GetIO(); (void)io;
 			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-			io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+			//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 			// Setup Dear ImGui style
 			ImGui::StyleColorsDark();

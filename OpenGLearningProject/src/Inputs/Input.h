@@ -4,6 +4,7 @@
 
 class Input
 {
+public:
 	static bool IsKeyPressed(KeyCode key);
 	static bool IsMouseButtonPressed(MouseCode button);
 	static glm::dvec2 GetMousePos();
