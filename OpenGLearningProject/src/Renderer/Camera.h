@@ -66,14 +66,7 @@ private:
 	glm::mat4 m_ProjMatrix;
 	glm::mat4 m_ViewMatrix;
 
-	float m_MovementSpeed;
-	float m_ZoomSpeed;
-	float m_RotationSpeed;
-	glm::vec2 m_LastMousePos;
-
 	glm::vec3 m_Pos;
-	glm::vec3 m_FocalPoint;
-	float m_Distance;
 
 	float m_Yaw;
 	float m_Pitch;
