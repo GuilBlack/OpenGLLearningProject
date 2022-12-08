@@ -8,7 +8,7 @@
 IndexBuffer::IndexBuffer()
 	: m_RendererID(0), m_Count(0)
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+	Renderer::GetRendererCommandQueue().PushCommand([this]()
 		{
 			glGenBuffers(1, &m_RendererID);
 		});
@@ -22,7 +22,7 @@ IndexBuffer::IndexBuffer()
 IndexBuffer::IndexBuffer(const void* data, uint32_t count)
 	: m_RendererID(0), m_Count(count)
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, data]()
+	Renderer::GetRendererCommandQueue().PushCommand([this, data]()
 		{
 			glGenBuffers(1, &m_RendererID);
 			Bind();
@@ -39,7 +39,7 @@ IndexBuffer::IndexBuffer(const void* data, uint32_t count)
 IndexBuffer::IndexBuffer(const std::vector<uint32_t>& data, uint32_t count)
 	: m_RendererID(0), m_Count(count)
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, data]()
+	Renderer::GetRendererCommandQueue().PushCommand([this, data]()
 		{
 			glGenBuffers(1, &m_RendererID);
 			Bind();
@@ -50,7 +50,7 @@ IndexBuffer::IndexBuffer(const std::vector<uint32_t>& data, uint32_t count)
 
 IndexBuffer::~IndexBuffer()
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+	Renderer::GetRendererCommandQueue().PushCommand([this]()
 		{
 			glDeleteBuffers(1, &m_RendererID);
 		});
@@ -59,7 +59,7 @@ IndexBuffer::~IndexBuffer()
 void IndexBuffer::AddData(const void* data, uint32_t count)
 {
 	m_Count = count;
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, data]()
+	Renderer::GetRendererCommandQueue().PushCommand([this, data]()
 		{
 			Bind();
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Count * sizeof(uint32_t), data, GL_STATIC_DRAW);

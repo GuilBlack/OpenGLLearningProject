@@ -879,7 +879,7 @@
     <ClInclude Include="src\vendor\glm\vector_relational.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mesh.h">
+    <ClInclude Include="src\Entity\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer\Camera.h">
@@ -960,6 +960,12 @@
     <ClInclude Include="src\vendor\stb_image\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Entity\Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Timestep.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp">
@@ -983,7 +989,7 @@
     <ClCompile Include="src\vendor\glm\detail\glm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mesh.cpp">
+    <ClCompile Include="src\Entity\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Camera.cpp">
@@ -1037,9 +1043,12 @@
     <ClCompile Include="src\vendor\stb_image\stb_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Entity\Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\Basic.shader" />
+    <None Include="res\shaders\Basic.glsl" />
     <None Include="src\vendor\glm\detail\func_common.inl">
       <Filter>Header Files</Filter>
     </None>
@@ -1448,12 +1457,20 @@
     <None Include="src\vendor\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="res\shaders\Basic.vert" />
+    <None Include="res\shaders\Basic.frag" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\textures\earth.jpg">
+    <Image Include="res\textures\2k_earth.jpg">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\textures\UVCheckerMap.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\2k_earth_normal_map.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\2k_earth_specular_map.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

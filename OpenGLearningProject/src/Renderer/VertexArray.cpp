@@ -6,7 +6,7 @@
 VertexArray::VertexArray()
 	: m_RendererID(0)
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+	Renderer::GetRendererCommandQueue().PushCommand([this]()
 		{
 			glGenVertexArrays(1, &m_RendererID);
 		});
@@ -14,7 +14,7 @@ VertexArray::VertexArray()
 
 VertexArray::~VertexArray()
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+	Renderer::GetRendererCommandQueue().PushCommand([this]()
 		{
 			glDeleteVertexArrays(1, &m_RendererID);
 		});
@@ -22,7 +22,7 @@ VertexArray::~VertexArray()
 
 void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vb)
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, vb]()
+	Renderer::GetRendererCommandQueue().PushCommand([this, vb]()
 		{
 			ASSERT(vb->GetLayout().GetAttributes().size());
 			Bind();
@@ -46,7 +46,7 @@ void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vb)
 
 void VertexArray::AddIndexBuffer(const std::shared_ptr<IndexBuffer>& ib)
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, ib]()
+	Renderer::GetRendererCommandQueue().PushCommand([this, ib]()
 		{
 			Bind();
 			ib->Bind();

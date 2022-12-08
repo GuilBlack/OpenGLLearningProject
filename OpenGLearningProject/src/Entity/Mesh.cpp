@@ -65,7 +65,7 @@ void Mesh::Draw(std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> textu
 	UpdateModelMatrix();
 	UpdateUniforms(shader);
 
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, shader, texture]()
+	Renderer::GetRendererCommandQueue().PushCommand([this, shader, texture]()
 		{
 			shader->Bind();
 			texture->Bind();
@@ -131,12 +131,13 @@ void Mesh::UpdateModelMatrix()
 /// <param name="shader">: shader that we want to use to render this mesh.</param>
 void Mesh::UpdateUniforms(Shader& shader) const
 {
-	shader.SetUniformMatrix4fv("model", m_ModelMatrix);
+	shader.SetUniformMatrix4fv("u_Model", m_ModelMatrix);
 }
 
-void Mesh::UpdateUniforms(std::shared_ptr<Shader> shader) const
+void Mesh::UpdateUniforms(std::shared_ptr<Shader> shader)
 {
-	shader->SetUniformMatrix4fv("model", m_ModelMatrix);
+	UpdateModelMatrix();
+	shader->SetUniformMatrix4fv("u_Model", m_ModelMatrix);
 }
 
 /// <summary>
@@ -156,7 +157,15 @@ Mesh* Mesh::CreateUVSphere(float radius, uint32_t nLatitude = 32, uint32_t nLong
 	//-1 to nLat because it wouldn't make sense otherwise.
 	uint32_t nIndices = 2 * 3 * nLongitude + 2 * 3 * (nLatitude - 1) * nLongitude;
 
-	int stride = 3 + 2;
+	VertexBufferLayout layout = VertexBufferLayout(
+		{
+			{ "pos",	GL_FLOAT, 3 },
+			{ "uv" ,	GL_FLOAT, 2 },
+			{ "normal",	GL_FLOAT, 3 }
+			//{ "col", GL_FLOAT, 4 }
+		});
+	int stride = layout.GetStride() / sizeof(float);
+
 	std::vector<float> vertices;
 	std::vector<uint32_t> indices;
 	vertices.resize(nVertices * stride);
@@ -174,6 +183,7 @@ Mesh* Mesh::CreateUVSphere(float radius, uint32_t nLatitude = 32, uint32_t nLong
 	{
 		vertices[count * stride] = 0.0f; vertices[count * stride + 1] = radius; vertices[count * stride + 2] = 0.0f;
 		vertices[count * stride + 3] = (float)i / ((float)nLongitude + 1.0f); vertices[count * stride + 4] = 0.0f;
+		vertices[count * stride + 5] = 0.0f; vertices[count * stride + 6] = 1.0f; vertices[count * stride + 7] = 0.0f;
 		//vertices[count * stride + 5] = 1.0f; vertices[count * stride + 6] = 1.0f;
 		//vertices[count * stride + 7] = 1.0f; vertices[count * stride + 8] = 1.0f;
 		++count;
@@ -186,11 +196,23 @@ Mesh* Mesh::CreateUVSphere(float radius, uint32_t nLatitude = 32, uint32_t nLong
 		for (uint32_t j = 0; j < nLongitude + 1; ++j)
 		{
 			float pLon = longitudeSlope * (float)j;
-			vertices[count * stride] = radius * sinf(pLat) * cosf(pLon);
-			vertices[count * stride + 1] = radius * cosf(pLat);
-			vertices[count * stride + 2] = -radius * sinf(pLat) * sinf(pLon);
+			glm::vec3 point = { sinf(pLat) * cosf(pLon), cosf(pLat), sinf(pLat) * sinf(pLon) };
+
+			// coords
+			vertices[count * stride] = radius * point.x;
+			vertices[count * stride + 1] = radius * point.y;
+			vertices[count * stride + 2] = -radius * point.z;
+
+			// UVs
 			vertices[count * stride + 3] = (float)j / (float)nLongitude;
 			vertices[count * stride + 4] = (float)i / ((float)nLatitude + 1.0f);
+
+			// normals
+			vertices[count * stride + 5] = point.x;
+			vertices[count * stride + 6] = point.y;
+			vertices[count * stride + 7] = point.z;
+
+			// colors
 			//vertices[count * stride + 5] = 1.0f;
 			//vertices[count * stride + 6] = 1.0f;
 			//vertices[count * stride + 7] = 1.0f;
@@ -204,6 +226,8 @@ Mesh* Mesh::CreateUVSphere(float radius, uint32_t nLatitude = 32, uint32_t nLong
 	{
 		vertices[count * stride] = 0.0f; vertices[count * stride + 1] = -radius; vertices[count * stride + 2] = 0.0f;
 		vertices[count * stride + 3] = (float)i / ((float)nLongitude + 1.0f); vertices[count * stride + 4] = 1.0f;
+		vertices[count * stride + 5] = 0.0f; vertices[count * stride + 6] = -1.0f; vertices[count * stride + 7] = 0.0f;
+		
 		//vertices[count * stride + 5] = 1.0f; vertices[count * stride + 6] = 1.0f;
 		//vertices[count * stride + 7] = 1.0f; vertices[count * stride + 8] = 1.0f;
 		++count;
@@ -248,13 +272,6 @@ Mesh* Mesh::CreateUVSphere(float radius, uint32_t nLatitude = 32, uint32_t nLong
 		indices[count++] = southPoleIndex - (nLongitude + 1) + i;
 		indices[count++] = southPoleIndex - (nLongitude + 1) + i + 1;
 	}
-
-	VertexBufferLayout layout = VertexBufferLayout(
-		{
-			{ "pos", GL_FLOAT, 3 },
-			{ "uv" , GL_FLOAT, 2},
-			//{ "col", GL_FLOAT, 4 }
-		});
 
 	return new Mesh(vertices, nVertices * stride * sizeof(vertices[0]), indices, nIndices, layout, glm::vec3(0.f, 0.f, 0.f),
 		glm::vec3(1.f, 1.f, 1.f));

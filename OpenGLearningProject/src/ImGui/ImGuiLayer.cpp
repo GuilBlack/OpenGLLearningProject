@@ -16,7 +16,7 @@ ImGuiLayer::~ImGuiLayer()
 
 void ImGuiLayer::OnAttach()
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([]()
+	Renderer::GetRendererCommandQueue().PushCommand([]()
 		{
 			// Setup Dear ImGui context
 			IMGUI_CHECKVERSION();
@@ -38,7 +38,7 @@ void ImGuiLayer::OnAttach()
 
 void ImGuiLayer::OnDetach()
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([]()
+	Renderer::GetRendererCommandQueue().PushCommand([]()
 		{
 			ImGui_ImplGlfw_Shutdown();
 			ImGui_ImplOpenGL3_Shutdown();
@@ -48,7 +48,7 @@ void ImGuiLayer::OnDetach()
 
 void ImGuiLayer::Begin()
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([]()
+	Renderer::GetRendererCommandQueue().PushCommand([]()
 		{
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplGlfw_NewFrame();
@@ -58,7 +58,7 @@ void ImGuiLayer::Begin()
 
 void ImGuiLayer::End()
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([]()
+	Renderer::GetRendererCommandQueue().PushCommand([]()
 		{
 			ImGuiIO io = ImGui::GetIO();
 

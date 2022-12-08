@@ -13,7 +13,7 @@ Shader::Shader(const std::string& filepath)
 
 Shader::~Shader()
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+	Renderer::GetRendererCommandQueue().PushCommand([this]()
 		{
 			glDeleteProgram(m_RendererID);
 		});
@@ -36,7 +36,7 @@ void Shader::Unbind() const
 
 void Shader::BindCommand() const
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+	Renderer::GetRendererCommandQueue().PushCommand([this]()
 		{
 			glUseProgram(m_RendererID);
 		});
@@ -44,18 +44,20 @@ void Shader::BindCommand() const
 
 void Shader::UnbindCommand() const
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([]()
+	Renderer::GetRendererCommandQueue().PushCommand([]()
 		{
 			glUseProgram(0);
 		});
 }
 
+void Shader::SetUniformVec3f(const std::string& uniformName, const glm::vec3& vec)
+{
+	glUniform3f(GetUniformLocation(uniformName), vec.x, vec.y, vec.z);
+}
+
 void Shader::SetUniformMatrix4fv(const std::string& uniformName, const glm::mat4& matrix)
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, uniformName, matrix]()
-		{
-			glUniformMatrix4fv(GetUniformLocation(uniformName), 1, GL_FALSE, &matrix[0][0]);
-		});
+	glUniformMatrix4fv(GetUniformLocation(uniformName), 1, GL_FALSE, &matrix[0][0]);
 }
 
 ShaderSourceProgram Shader::ParseShader(const std::string& filepath)
@@ -110,7 +112,7 @@ void Shader::CompileShader(uint32_t& program, uint32_t type, const std::string& 
 
 void Shader::CreateShaderProgram()
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+	Renderer::GetRendererCommandQueue().PushCommand([this]()
 		{
 			auto[vertexShader, fragmentShader] = ParseShader(m_FilePath);
 			uint32_t program = glCreateProgram();

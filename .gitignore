@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/OpenGLearningProject/res/shaders/Basic.frag
+/OpenGLearningProject/res/shaders/Basic.vert

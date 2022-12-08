@@ -11,10 +11,11 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 ////// OrbitalCameraControl /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma region Orbital Camera Control
 
-void OrbitalCameraControl::UpdateCamera(const Camera& cam, glm::vec3& camPos, float& pitch, float& yaw)
+void OrbitalCameraControl::UpdateCamera(const Camera& cam, Timestep deltaTime, glm::vec3& camPos, float& pitch, float& yaw)
 {
-	if (Input::IsKeyPressed(KRightAlt))
+	if (Input::IsKeyPressed(KLeftAlt))
 	{
 		// Creating mouse delta
 		glm::vec2 mouse = { Input::GetMousePosX(), Input::GetMousePosY() };
@@ -52,9 +53,12 @@ void OrbitalCameraControl::UpdateCamera(const Camera& cam, glm::vec3& camPos, fl
 	camPos = m_FocalPoint - cam.GetForwardVector() * m_Distance;
 }
 
+#pragma endregion
+
 /////////////////////////////////////////////////////////////////////////////////////////////////
 ////// Camera ///////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma region Main Code For The Camera
 
 Camera::Camera(glm::mat4 projMatrix, glm::vec3 pos, CameraControl* camControl)
 	: m_ViewMatrix(1.f), m_ProjMatrix(projMatrix),
@@ -63,15 +67,15 @@ Camera::Camera(glm::mat4 projMatrix, glm::vec3 pos, CameraControl* camControl)
 	m_CamControl.reset(camControl);
 }
 
-void Camera::Update()
+void Camera::Update(Timestep deltaTime)
 {
-	m_CamControl->UpdateCamera(*this, m_Pos, m_Pitch, m_Yaw);
+	m_CamControl->UpdateCamera(*this, deltaTime, m_Pos, m_Pitch, m_Yaw);
 	m_ViewMatrix = glm::toMat4(glm::conjugate(GetQuatOrientation())) * glm::translate(glm::mat4(1.f), -m_Pos);
 }
 
-void Camera::SetProjectionMatrix(float fovy, float aspectRatio, float nearPlane, float farPlane)
+void Camera::SetProjectionMatrix(glm::mat4 projectionMatrix)
 {
-	m_ProjMatrix = glm::perspective(fovy, aspectRatio, nearPlane, farPlane);
+	m_ProjMatrix = projectionMatrix;
 }
 
 glm::vec3 Camera::GetForwardVector() const
@@ -94,3 +98,5 @@ glm::quat Camera::GetQuatOrientation() const
 {
 	return glm::quat({ -glm::radians(m_Pitch), -glm::radians(m_Yaw), 0.f });
 }
+
+#pragma endregion

@@ -11,15 +11,7 @@ public:
 	RenderCommandQueue();
 	~RenderCommandQueue();
 
-	void Init();
-
 	void PushCommand(CommandFn fn);
-	void Execute();
-
-	void NotifyBeginLoop();
-	void WaitForLoop();
-
-	inline void SetSafeExit(const bool& safeExit) { m_SafeExit = safeExit; }
 private:
 	std::deque<CommandFn> m_CommandQueue;
 	std::thread m_RenderThread;
@@ -29,6 +21,13 @@ private:
 	std::atomic_char16_t m_Loop;
 
 private:
+	void Init();
 	void Shutdown();
 	void Run(GLFWwindow* window);
+	void Execute();
+
+	void NotifyBeginLoop();
+	void WaitForLoop();
+
+	inline void SetSafeExit(const bool& safeExit) { m_SafeExit = safeExit; }
 };

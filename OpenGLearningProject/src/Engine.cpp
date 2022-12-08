@@ -41,7 +41,9 @@ Engine::~Engine()
 }
 
 /// <summary>
-/// This function will initialize the glfw context and setup some window hints.
+/// This function will setup some window hints.
+/// The graphics context is initialized in the RenderCommandQueue directly
+/// since we initialize the render the render thread over there
 /// </summary>
 void Engine::InitGLFW()
 {
@@ -78,7 +80,6 @@ void Engine::InitWindow(const char* windowTitle, bool resizable)
 	}
 
 	glfwGetWindowPos(m_Window, &m_WindowData.PosX, &m_WindowData.PosY);
-	ENGINE_INFO("PosX: {0}, PosY: {1}", m_WindowData.PosX, m_WindowData.PosY);
 	
 	// Set OpenGL context for GLEW
 	//glfwMakeContextCurrent(m_Window);
@@ -111,7 +112,7 @@ void Engine::InitCallbacks()
 		m_Window,
 		[](GLFWwindow* window, int32_t fbWidth, int32_t fbHeight)
 		{
-			Renderer::GetRenderer().GetCommandQueue().PushCommand([fbWidth, fbHeight]()
+			Renderer::GetRendererCommandQueue().PushCommand([fbWidth, fbHeight]()
 				{
 					glViewport(0, 0, fbWidth, fbHeight);
 				});
@@ -250,9 +251,18 @@ void Engine::PushShader(std::string filepath)
 
 void Engine::Run()
 {
-	Renderer::SetClearColor({ 1.f, 0.f , 1.f , 1.0f });
 	while (m_Running)
 	{
+		m_CurrTime = glfwGetTime();
+		m_DeltaTime = m_CurrTime - m_PrevTime;
+		m_PrevTime = m_CurrTime;
+
+	#ifdef DEBUG
+		glfwSetWindowTitle(GetEngine().m_Window, 
+			(m_WindowData.Title + " - " + std::to_string(1.0 / (double)m_DeltaTime) + "FPS").c_str());
+	#endif // DEBUG
+
+
 		// See if any events occured
 		glfwPollEvents();
 
@@ -269,10 +279,10 @@ void Engine::Run()
 		Renderer::BeginFrame();
 
 		for (Layer* layer : m_LayerStack)
-			layer->OnUpdate();
+			layer->OnUpdate(m_DeltaTime);
 
 		m_ImGuiLayer->Begin();
-		Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+		Renderer::GetRendererCommandQueue().PushCommand([this]()
 			{
 				for (Layer* layer : m_LayerStack)
 					layer->OnImGuiRender();
@@ -300,6 +310,6 @@ void Engine::OnEvent(Event& ev)
 bool Engine::SetWindowShouldClose(WindowCloseEvent& e)
 {
 	m_Running = false;
-	Renderer::GetRenderer().Shutdown();
+	Renderer::RendererShutdown();
 	return true;
 }

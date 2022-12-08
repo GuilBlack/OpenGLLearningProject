@@ -12,6 +12,7 @@
 #include <mutex>
 #include <atomic>
 #include <chrono>
+#include <variant>
 
 using namespace std::chrono_literals;
 

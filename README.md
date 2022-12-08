@@ -27,6 +27,8 @@ For the moment we have:
 
 The weird artifacts are from my gif recording video... I don't know why it's like this.
 ![preview gif](ImagePreviews/preview.gif)
+With Blinn-Phong lighting model:
+![preview gif with Blinn-Phong lighting](ImagePreviews/preview2.gif)
 
 ## Future of this project
 

@@ -27,7 +27,7 @@ static GLenum GetGlTextureSizedFormat(TextureFormat format, bool srgb)
 Texture2D::Texture2D(TextureFormat format, uint32_t width, uint32_t height, bool isSRGB)
 	: m_RendererID(0), m_TextureFormat(format), m_Width(width), m_Height(height), m_IsSRGB(isSRGB), m_ImageData(nullptr)
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+	Renderer::GetRendererCommandQueue().PushCommand([this]()
 		{
 			glGenTextures(1, &m_RendererID);
 			glBindTexture(GL_TEXTURE_2D, m_RendererID);
@@ -48,14 +48,19 @@ Texture2D::Texture2D(const std::string & path, bool isSRGB)
 	: m_RendererID(0), m_Path(path), m_TextureFormat(), m_Width(0), m_Height(0), m_IsSRGB(isSRGB), m_ImageData(nullptr)
 {
 	int32_t format;
-	ENGINE_TRACE("Loading texture: {}", path);
 	
 	stbi_set_flip_vertically_on_load(false);
 	m_ImageData = stbi_load(path.c_str(), &m_Width, &m_Height, &format, 0);
+	if (stbi_failure_reason() && m_ImageData == NULL && !(format == 3 || format == 4))
+	{
+		ENGINE_ERROR("TextureError: {} {}", stbi_failure_reason(), m_Path);
+		stbi_image_free(m_ImageData);
+		return;
+	}
 	ASSERT((format == 3 || format == 4) && "Doesn't support greyscale yet!");
 	m_TextureFormat = format == 3 ? TextureFormat::RGB : TextureFormat::RGBA;
 
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+	Renderer::GetRendererCommandQueue().PushCommand([this]()
 		{
 			uint32_t levels = 1;
 
@@ -72,8 +77,8 @@ Texture2D::Texture2D(const std::string & path, bool isSRGB)
 			glTexStorage2D(GL_TEXTURE_2D, levels, GetGlTextureSizedFormat(m_TextureFormat, m_IsSRGB), m_Width, m_Height);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 			//int32_t format;
 			//glGetInternalformativ(GL_TEXTURE_2D, GL_RGBA8, GL_TEXTURE_IMAGE_FORMAT, 1, &format);

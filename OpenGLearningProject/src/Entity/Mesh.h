@@ -33,9 +33,6 @@ public:
 		glm::vec3 scale = glm::vec3(1.0f),
 		glm::vec3 rotation = glm::vec3(0.0f));
 
-	void Draw(Shader& shader);
-	void Draw(std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> texture);
-
 	void MoveTo(glm::vec3 position);
 	void SetPosition(glm::vec3 position);
 
@@ -46,16 +43,23 @@ public:
 	void ScaleUp(glm::vec3 scale);
 	void SetScale(glm::vec3 scale);
 
+	inline uint32_t GetIndexCount() const { return m_Va.GetIndexBuffer()->GetCount(); }
+	inline void Bind() const { m_Va.Bind(); }
+
+public:
+	void Draw(Shader& shader);
+	void Draw(std::shared_ptr<Shader> shader, std::shared_ptr<Texture2D> texture);
+
+	void UpdateModelMatrix();
+	void UpdateUniforms(Shader& shader) const;
+	void UpdateUniforms(std::shared_ptr<Shader> shader);
+
 private:
 	VertexArray m_Va;
 	VertexBufferLayout m_Layout;
 
 	glm::mat4 m_ModelMatrix;
 
-private:
-	void UpdateModelMatrix();
-	void UpdateUniforms(Shader& shader) const;
-	void UpdateUniforms(std::shared_ptr<Shader> shader) const;
 
 public:
 	static Mesh* CreateUVSphere(float radius, uint32_t nLatitude, uint32_t nLongitude);

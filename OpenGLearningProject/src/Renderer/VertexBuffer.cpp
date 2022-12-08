@@ -5,7 +5,7 @@
 VertexBuffer::VertexBuffer()
 	: m_RendererID(0), m_Size(0)
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+	Renderer::GetRendererCommandQueue().PushCommand([this]()
 		{
 			glGenBuffers(1, &m_RendererID);
 		});
@@ -19,7 +19,7 @@ VertexBuffer::VertexBuffer()
 VertexBuffer::VertexBuffer(const void* data, uint32_t size)
 	: m_RendererID(0), m_Size(size)
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, data]()
+	Renderer::GetRendererCommandQueue().PushCommand([this, data]()
 		{
 			glGenBuffers(1, &m_RendererID);
 			Bind();
@@ -36,7 +36,7 @@ VertexBuffer::VertexBuffer(const void* data, uint32_t size)
 VertexBuffer::VertexBuffer(const std::vector<float>& data, uint32_t size)
 	: m_RendererID(0), m_Size(size)
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, data]()
+	Renderer::GetRendererCommandQueue().PushCommand([this, data]()
 		{
 			glGenBuffers(1, &m_RendererID);
 			Bind();
@@ -47,7 +47,7 @@ VertexBuffer::VertexBuffer(const std::vector<float>& data, uint32_t size)
 
 VertexBuffer::~VertexBuffer()
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this]()
+	Renderer::GetRendererCommandQueue().PushCommand([this]()
 		{
 			glDeleteBuffers(1, &m_RendererID);
 		});
@@ -56,7 +56,7 @@ VertexBuffer::~VertexBuffer()
 void VertexBuffer::AddData(const void* data, uint32_t size)
 {
 	m_Size = size;
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([this, data]()
+	Renderer::GetRendererCommandQueue().PushCommand([this, data]()
 		{
 			Bind();
 			glBufferData(GL_ARRAY_BUFFER, m_Size, data, GL_STATIC_DRAW);

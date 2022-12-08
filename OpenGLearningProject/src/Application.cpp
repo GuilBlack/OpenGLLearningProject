@@ -1,8 +1,6 @@
 #pragma once
 #include "pch.h"
 #include "Engine.h"
-#include "ImGui/ImGuiLayer.h"
-#include "Layers/Layer.h"
 #include "Renderer/Texture.h"
 #include "Renderer/Camera.h"
 
@@ -12,25 +10,10 @@ class GameLayer : public Layer
 {
 public:
 	GameLayer()
-		: m_Camera(glm::perspective(45.0f, (GLfloat)100 / (GLfloat)100, 0.1f, 500.0f), 
-			glm::vec3(0.f, 0.f, 3.f), new OrbitalCameraControl(0.005f, 0.005f, 0.1f))
 	{}
 
 	virtual void OnAttach() override 
 	{
-		std::vector<uint32_t> indices = {
-		0, 3, 1,
-		1, 3, 2,
-		2, 3, 0,
-		0, 2, 1
-		};
-
-		std::vector<float> vertices = {
-			-1.0f, -1.0f, 0.0f, 0.1f, 0.1f, 0.4f, 1.0f,
-			0.0f, -1.0f, 1.0f, 0.1f, 0.1f, 0.4f, 1.0f,
-			1.0f, -1.0f, 0.0f, 0.1f, 0.1f, 0.4f, 1.0f,
-			0.0f, 1.0f, 0.0f, 0.1f, 0.1f, 0.4f, 1.0f
-		};
 
 		VertexBufferLayout layout = VertexBufferLayout(
 			{
@@ -40,36 +23,26 @@ public:
 
 		Engine& engine = Engine::GetEngine();
 
-		//m_Mesh.reset(Mesh::Create(vertices, vertices.size() * sizeof(m_Vertices[0]),
-		//	indices, indices.size(), layout,
-		//	glm::vec3(0.0f, 0.0f, -3.0f),
-		//	glm::vec3(0.4f, 0.4f, 0.4f)));
-		m_Texture.reset(Texture2D::Create("res/textures/earth.jpg", true));
+		Renderer::GetRenderer().SetClearColor({ 0.10f, 0.12f, 0.10f, 1.f });
+		
+		m_Texture.reset(Texture2D::Create("res/textures/2k_earth.jpg"));
 
 		m_Mesh.reset(Mesh::CreateUVSphere(1, 64, 64));
 
-		m_Shader.reset(Shader::Create("res/shaders/Basic.shader"));
+		m_Shader.reset(Shader::Create("res/shaders/Basic.glsl"));
 		auto[width, height] = Engine::GetEngine().GetWindowDimensions();
 
-		m_Camera.SetProjectionMatrix(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 500.0f);
-
-		m_Shader->BindCommand();
-		m_Shader->SetUniformMatrix4fv("projection", m_Camera.GetProjectionMatrix());
+		m_Camera.reset(new Camera(glm::perspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 500.0f),
+			glm::vec3(0.f, 0.f, 3.f), new OrbitalCameraControl(0.005f, 0.005f, 0.1f)));
 	}
 	virtual void OnDetach() override {}
-	virtual void OnUpdate() override 
+	virtual void OnUpdate(Timestep deltaTime) override 
 	{
-		if (Engine::GetEngine().DidWindowDimensionsChange())
-		{
-			auto [width, height] = Engine::GetEngine().GetWindowDimensions();
-			m_Camera.SetProjectionMatrix(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 500.0f);
-			m_Shader->BindCommand();
-			m_Shader->SetUniformMatrix4fv("projection", m_Camera.GetProjectionMatrix());
-		}
-		m_Camera.Update();
-		m_Shader->SetUniformMatrix4fv("view", m_Camera.GetViewMatrix());
-		//m_Mesh->Rotate({ 0.0f, 1.0f, 0.0f });
-		m_Mesh->Draw(m_Shader, m_Texture);
+		Renderer::BeginScene(m_Camera);
+
+		Renderer::Submit(m_Mesh, m_Shader, m_Texture);
+
+		Renderer::EndScene();
 	}
 
 	virtual void OnImGuiRender() override 
@@ -108,16 +81,27 @@ public:
 		ImGui::End();
 	}
 
-	virtual void OnEvent(Event& ev) override {}
+	virtual void OnEvent(Event& ev) override 
+	{
+		EventDispatcher dispatcher(ev);
+		dispatcher.Dispatch<WindowResizedEvent>(BIND_EVENT_FN(GameLayer::OnWindowResizedEvent));
+	}
+
+	bool OnWindowResizedEvent(WindowResizedEvent& ev)
+	{
+		auto [width, height] = ev.GetWidthAndHeight();
+		m_Camera->SetProjectionMatrix(glm::perspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 500.0f));
+		return false;
+	};
 
 private:
 	std::vector<uint32_t> m_Indices;
 	std::vector<float> m_Vertices;
-	std::unique_ptr<Mesh> m_Mesh;
+	std::shared_ptr<Mesh> m_Mesh;
 	std::shared_ptr<Shader> m_Shader;
 	std::shared_ptr<Texture2D> m_Texture;
-	
-	Camera m_Camera;
+
+	std::shared_ptr<Camera> m_Camera;
 
 private:
 		void PushAttributeToImGui(const char* attrName, glm::vec3& attr, float step)

@@ -20,6 +20,7 @@ public:
 	void UnbindCommand() const;
 
 	//Set uniforms
+	void SetUniformVec3f(const std::string& uniformName, const glm::vec3& vec);
 	void SetUniformMatrix4fv(const std::string& uniformName, const glm::mat4& matrix);
 
 private:

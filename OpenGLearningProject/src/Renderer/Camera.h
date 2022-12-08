@@ -1,7 +1,6 @@
 #pragma once
 #include "glm/glm.hpp"
-
-#include "Renderer/Shader.h"
+#include "Timestep.h"
 
 class CameraControl
 {
@@ -17,7 +16,7 @@ private:
 	/// <param name="camPos">position of the cam to be updated</param>
 	/// <param name="pitch">pitch of the cam to be updated</param>
 	/// <param name="yaw">yaw of the cam to be updated</param>
-	virtual void UpdateCamera(const Camera& cam, glm::vec3& camPos, float& pitch, float& yaw) {};
+	virtual void UpdateCamera(const Camera& cam, Timestep deltaTime, glm::vec3& camPos, float& pitch, float& yaw) {};
 };
 
 class OrbitalCameraControl : public CameraControl
@@ -39,7 +38,7 @@ private:
 	float m_Distance;
 
 private:
-	virtual void UpdateCamera(const Camera& cam, glm::vec3& camPos, float& pitch, float& yaw) override;
+	virtual void UpdateCamera(const Camera& cam, Timestep deltaTime, glm::vec3& camPos, float& pitch, float& yaw) override;
 };
 
 class Camera
@@ -47,12 +46,13 @@ class Camera
 public:
 	Camera(glm::mat4 projMatrix, glm::vec3 pos, CameraControl* camControl);
 
-	void Update();
+	void Update(Timestep deltaTime);
 
 	const glm::mat4& GetProjectionMatrix() const { return m_ProjMatrix; }
-	void SetProjectionMatrix(float fovy, float aspectRatio, float nearPlane, float farPlane);
+	void SetProjectionMatrix(glm::mat4 projectionMatrix);
 
 	const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
+	glm::mat4 GetViewProjectionMatrix() const { return m_ProjMatrix * m_ViewMatrix; }
 
 	glm::vec3 GetForwardVector() const;
 	glm::vec3 GetUpVector() const;

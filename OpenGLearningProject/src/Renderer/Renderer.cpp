@@ -19,8 +19,6 @@ bool GlLogCall(const char* function, const char* file, int line)
 	return true;
 }
 
-//Renderer* Renderer::s_Renderer = new Renderer();
-
 void Renderer::Init()
 {
 	GetRenderer().GetCommandQueue().PushCommand([]()
@@ -94,17 +92,32 @@ void Renderer::EndFrame()
 	//s_Renderer->m_CommandQueue.Execute();
 }
 
-void Renderer::Submit(const std::shared_ptr<VertexArray>&va, const std::shared_ptr<Shader>& shader)
+void Renderer::BeginScene(std::shared_ptr<Camera> cam)
 {
-	Renderer::GetRenderer().GetCommandQueue().PushCommand([va, shader]()
+	cam->Update(Engine::GetDeltaTime());
+	Renderer::GetRenderer().m_SceneData.m_ViewProjectionMatrix = cam->GetViewProjectionMatrix();
+	Renderer::GetRenderer().m_SceneData.m_CamPosition = cam->GetPosition();
+}
+
+void Renderer::EndScene()
+{}
+
+void Renderer::Submit(std::shared_ptr<Mesh>& mesh, std::shared_ptr<Shader>& shader, std::shared_ptr<Texture2D>& texture)
+{
+	SceneData& sceneData = Renderer::GetRenderer().m_SceneData;
+	Renderer::GetRendererCommandQueue().PushCommand([sceneData, mesh, shader, texture]()
 		{
 			shader->Bind();
-			va->Bind();
 
-			glDrawElements(GL_TRIANGLES, va->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			shader->SetUniformMatrix4fv("u_ViewProjection", sceneData.m_ViewProjectionMatrix);
+			shader->SetUniformVec3f("u_CamPos", sceneData.m_CamPosition);
+			shader->SetUniformVec3f("u_PointLight.Pos", glm::vec3(2.0f, 2.0f, 2.0f));
+			shader->SetUniformVec3f("u_PointLight.Color", glm::vec3(1.0f, 1.0f, 1.0f));
+			mesh->UpdateUniforms(shader);
 
-			va->Unbind();
-			shader->Unbind();
+			texture->Bind();
+			mesh->Bind();
+			glDrawElements(GL_TRIANGLES, mesh->GetIndexCount(), GL_UNSIGNED_INT, 0);
 		});
 }
 

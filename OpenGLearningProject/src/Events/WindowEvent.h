@@ -17,6 +17,8 @@ public:
 		return ss.str();
 	}
 
+	std::pair<int32_t, int32_t> GetWidthAndHeight() { return { m_Width, m_Height }; }
+
 private:
 	int32_t m_Width, m_Height;
 };

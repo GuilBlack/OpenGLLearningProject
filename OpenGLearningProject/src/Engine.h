@@ -3,8 +3,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "Timestep.h"
+
 #include "Renderer/Renderer.h"
-#include "Mesh.h"
+#include "Entity/Mesh.h"
 #include "Events/Event.h"
 #include "Layers/LayerStack.h"
 #include "ImGui/ImGuiLayer.h"
@@ -20,6 +22,10 @@ public:
 	Engine(int32_t openGlMajorVersion = 4, int32_t openGlMinorVersion = 5, int32_t width = 1280, int32_t height = 720, const char* windowTitle = "Engine", bool resizable = true);
 	~Engine();
 	inline static Engine& GetEngine() { return *s_Engine; }
+	inline static Timestep GetDeltaTime() { return GetEngine().m_DeltaTime; }
+	inline static double GetCurrentTime() { return GetEngine().m_CurrTime; }
+
+public:
 	inline GLFWwindow& GetWindow() { return *m_Window; }
 	std::pair<int32_t, int32_t> GetWindowDimensions() { return { m_WindowData.Width, m_WindowData.Height }; }
 	std::pair<int32_t, int32_t> GetWindowPos() { return { m_WindowData.PosX, m_WindowData.PosY}; }
@@ -71,6 +77,10 @@ private:
 	ImGuiLayer* m_ImGuiLayer;
 	std::vector<std::shared_ptr<Shader>> m_Shaders;
 	std::vector<std::shared_ptr<Mesh>> m_Meshes;
+
+	Timestep m_DeltaTime{ 0.0 };
+	double m_CurrTime = 0.0;
+	double m_PrevTime = 0.0;
 
 private:
 	void InitGLFW();
