@@ -32,4 +32,4 @@ With Blinn-Phong lighting model:
 
 ## Future of this project
 
-My goal for this project is to at least achieve PBR for the graphics engine but first I'll probably implement FBOs and Phong lighting. (That's what I said but instead I'm working on ECS Material System and an asset manager...)
+My goal for this project is to at least achieve PBR for the graphics engine but first I'll probably implement FBOs and Phong lighting. (That's what I said but instead I'm working on an ECS, a Material System and an asset manager...)
