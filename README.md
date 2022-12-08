@@ -6,7 +6,7 @@ Since it's a learning project to understand how the underlying system of graphic
 
 For the libraries, I used ImGUI as a debugging in-app interface, GLFW for creating the OpenGL context and reading inputs from the hardware, stb_image for image processing, glm for the maths and spdlog for logging purposes.
 
-This project is very much a WIP!
+This project is very much a WIP! (And the Material class doesn't work. I'm thinking about giving it a Data Oriented Design since it will be easier to handle and better for storage.)
 
 ## What is already in the project?
 
@@ -32,4 +32,4 @@ With Blinn-Phong lighting model:
 
 ## Future of this project
 
-My goal for this project is to at least achieve PBR for the graphics engine but first I'll probably implement FBOs and Phong lighting.
+My goal for this project is to at least achieve PBR for the graphics engine but first I'll probably implement FBOs and Phong lighting. (That's what I said but instead I'm working on ECS Material System and an asset manager...)
